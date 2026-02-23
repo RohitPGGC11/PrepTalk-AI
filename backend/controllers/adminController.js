@@ -173,3 +173,63 @@ export const deleteQuestion = async (req, res) => {
     });
   }
 };
+
+
+export const getQuestions = async (req, res) => {
+  try {
+    const { domain, difficultyTier } = req.query;
+
+    let filter = { isActive: true };
+
+    // Filter by domain
+    if (domain && domain !== "All") {
+      filter.domain = domain;
+    }
+
+    // Filter by difficulty
+    if (difficultyTier && difficultyTier !== "All") {
+      filter.difficultyTier = difficultyTier;
+    }
+
+    const questions = await Question.find(filter)
+      .sort({ domain: 1, difficultyTier: 1, order: 1 });
+
+    res.status(200).json({
+      success: true,
+      count: questions.length,
+      data: questions
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
+  }
+};
+
+export const fetchOne = async (req,res) =>{
+  try{
+    const { id } = req.params;
+    if(!id){
+      return res.status(400).
+      json({success:false,message:"ID is Required"})
+    }
+    const question = await Question.findById(id);
+    if(!question){
+      return res.status(404).json({
+      success:false,
+      data: question
+    });
+    }
+    res.status(200).json({
+      success:true,
+      data:question
+    })
+  }catch (error) {
+     return res.status(500).json({
+      success: false,
+      message: error.message
+    });
+  }
+}

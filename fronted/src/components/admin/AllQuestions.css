@@ -1,0 +1,311 @@
+/* ===== Root Theme Variables ===== */
+:root {
+  --bg-main: #0f172a;
+  --bg-soft: #1e293b;
+  --text-main: #f1f5f9;
+  --text-muted: #94a3b8;
+  --accent: #6366f1;
+
+  --tier-beginner: #22c55e;
+  --tier-intermediate: #f59e0b;
+  --tier-advanced: #ef4444;
+}
+
+/* ===== Root Layout ===== */
+.aq-root {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #0f172a, #1e293b);
+  color: var(--text-main);
+  font-family: "Segoe UI", sans-serif;
+}
+
+/* ===== Header ===== */
+.aq-header {
+  padding: 40px 20px 30px;
+  background: radial-gradient(circle at top left, #1e293b, #0f172a);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.aq-header-inner {
+  max-width: 1100px;
+  margin: auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.aq-eyebrow {
+  font-size: 12px;
+  letter-spacing: 1px;
+  color: var(--accent);
+  text-transform: uppercase;
+}
+
+.aq-title {
+  margin: 5px 0 0;
+  font-size: 28px;
+  font-weight: 600;
+}
+
+.aq-count-pill {
+  background: var(--bg-soft);
+  padding: 10px 16px;
+  border-radius: 50px;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  box-shadow: 0 0 20px rgba(99, 102, 241, 0.2);
+}
+
+.aq-count-num {
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.aq-count-label {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+/* ===== Filters ===== */
+.aq-filters {
+  max-width: 1100px;
+  margin: 30px auto;
+  padding: 20px;
+  background: var(--bg-soft);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.aq-filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.aq-filter-label {
+  font-size: 12px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+
+.aq-select-wrap {
+  position: relative;
+}
+
+.aq-select {
+  appearance: none;
+  padding: 10px 35px 10px 12px;
+  background: #0f172a;
+  border: 1px solid #334155;
+  border-radius: 8px;
+  color: white;
+  cursor: pointer;
+}
+
+.aq-select:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.aq-select-arrow {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  font-size: 12px;
+}
+
+.aq-filter-divider {
+  flex: 1;
+  height: 1px;
+  background: #334155;
+}
+
+/* ===== Body ===== */
+.aq-body {
+  max-width: 1100px;
+  margin: auto;
+  padding: 20px;
+}
+
+/* ===== Loading ===== */
+.aq-loading {
+  text-align: center;
+  padding: 50px 0;
+}
+
+.aq-spinner {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.aq-spinner span {
+  width: 8px;
+  height: 8px;
+  background: var(--accent);
+  border-radius: 50%;
+  animation: bounce 1s infinite ease-in-out;
+}
+
+.aq-spinner span:nth-child(2) {
+  animation-delay: 0.2s;
+}
+.aq-spinner span:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes bounce {
+  0%, 80%, 100% { transform: scale(0); }
+  40% { transform: scale(1); }
+}
+
+/* ===== Empty ===== */
+.aq-empty {
+  text-align: center;
+  padding: 60px 0;
+  color: var(--text-muted);
+}
+
+.aq-empty-icon {
+  font-size: 40px;
+  display: block;
+  margin-bottom: 10px;
+}
+
+/* ===== Grid ===== */
+.aq-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 20px;
+}
+
+/* ===== Card ===== */
+.aq-card {
+  background: rgba(30, 41, 59, 0.7);
+  backdrop-filter: blur(8px);
+  border-radius: 14px;
+  padding: 18px;
+  position: relative;
+  overflow: hidden;
+  transition: 0.3s ease;
+  animation: fadeUp 0.5s ease forwards;
+  animation-delay: calc(var(--card-index) * 50ms);
+  opacity: 0;
+}
+
+@keyframes fadeUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.aq-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+.aq-card--removing {
+  opacity: 0.5;
+  transform: scale(0.95);
+}
+
+/* ===== Card Top ===== */
+.aq-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.aq-badges {
+  display: flex;
+  gap: 8px;
+}
+
+.aq-badge {
+  font-size: 12px;
+  padding: 4px 8px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.aq-badge--domain {
+  background: #334155;
+}
+
+.aq-badge--tier {
+  background: var(--tier-color);
+  color: white;
+}
+
+.aq-order {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+/* ===== Remove Button ===== */
+.aq-remove-btn {
+  background: transparent;
+  border: none;
+  color: #f87171;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.aq-remove-btn:hover {
+  color: #ef4444;
+}
+
+.aq-remove-spinner {
+  width: 14px;
+  height: 14px;
+  border: 2px solid #f87171;
+  border-top: 2px solid transparent;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ===== Question Text ===== */
+.aq-question {
+  font-size: 15px;
+  margin-bottom: 12px;
+  line-height: 1.4;
+}
+
+/* ===== Keywords ===== */
+.aq-keywords {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.aq-keyword {
+  font-size: 11px;
+  padding: 4px 8px;
+  border-radius: 20px;
+  background: #334155;
+  color: var(--text-muted);
+}
+
+/* ===== Stripe Accent ===== */
+.aq-card-stripe {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 4px;
+  width: 100%;
+  background: var(--tier-color);
+}

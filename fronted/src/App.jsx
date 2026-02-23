@@ -5,6 +5,7 @@ import Login from './pages/Login/Login'
 import Register from './pages/Register/Register'
 import Chat from './pages/Chat/Chat'
 import AdminDashboard from './pages/Admin/AdminDashboard'
+import EditForm from './components/admin/editform'
 
 const App = () => {
   return (
@@ -15,6 +16,7 @@ const App = () => {
       <Route path="/Register" element={<Register/>}></Route>
       <Route path="/chat" element={<Chat/>}></Route>
       <Route path="/admin" element={<AdminDashboard/>}></Route>
+      <Route path="/admin/edit-form/:id" element={<EditForm/>}></Route>
     </Routes>
     </div>
   )

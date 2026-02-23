@@ -1,0 +1,143 @@
+/* Page Background (Optional - apply to body if needed) */
+body {
+  margin: 0;
+  padding: 0;
+  background: linear-gradient(135deg, #0f172a, #1e293b);
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Main Container */
+.add-question-container {
+  max-width: 650px;
+  margin: 60px auto;
+  padding: 35px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 16px;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* Heading */
+.add-question-container h2 {
+  text-align: center;
+  margin-bottom: 30px;
+  color: #f1f5f9;
+  font-size: 1.8rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+/* Form Layout */
+.add-question-form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+/* Inputs, Select, Textarea */
+.add-question-form input,
+.add-question-form select,
+.add-question-form textarea {
+  padding: 12px 14px;
+  font-size: 14px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.06);
+  color: #e2e8f0;
+  transition: all 0.3s ease;
+}
+
+/* Placeholder Color */
+.add-question-form input::placeholder,
+.add-question-form textarea::placeholder {
+  color: #94a3b8;
+}
+
+/* Focus Effect */
+.add-question-form input:focus,
+.add-question-form select:focus,
+.add-question-form textarea:focus {
+  outline: none;
+  border-color: #4a90e2;
+  box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.25);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+/* Textarea Styling */
+.add-question-form textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+/* Button */
+.add-question-form button {
+  padding: 12px;
+  font-size: 15px;
+  font-weight: 600;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  background: linear-gradient(135deg, #4a90e2, #2563eb);
+  color: white;
+  transition: all 0.3s ease;
+}
+
+/* Button Hover */
+.add-question-form button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(37, 99, 235, 0.4);
+}
+
+/* Disabled Button */
+.add-question-form button:disabled {
+  background: #64748b;
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+}
+
+/* Message */
+.form-message {
+  margin-top: 20px;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 500;
+  color: #f1f5f9;
+}
+/* Custom Select */
+.custom-select {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.select-label {
+  font-size: 13px;
+  color: #94a3b8;
+}
+
+.select-options {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.select-option {
+  padding: 8px 14px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.06);
+  color: #e2e8f0;
+  cursor: pointer;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  transition: 0.3s ease;
+}
+
+.select-option:hover {
+  background: rgba(74, 144, 226, 0.2);
+}
+
+.select-option.active {
+  background: linear-gradient(135deg, #4a90e2, #2563eb);
+  border-color: transparent;
+}
