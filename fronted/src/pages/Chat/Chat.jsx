@@ -79,7 +79,7 @@ function SpeechToText() {
       setLoading(true);
       const response = await axios.post(url + "/api/ollama/chat", {
       
-        message: text,
+        answer: text,
       });
 
       if (response.data.success) {
