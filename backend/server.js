@@ -17,7 +17,10 @@ const PORT=4000;
 
 
 app.use(express.json());
-app.use(cors());
+app.use(cors({
+  origin: "http://localhost:5173", // your frontend URL
+  credentials: true
+}));
 app.use(cookieParser())
 app.use("/api/user-login",routers)
 app.use("/api/ollama",AIRouter);

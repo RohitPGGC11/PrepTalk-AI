@@ -1,7 +1,31 @@
 import React from "react";
 import "./Home.css";
+import { useNavigate } from "react-router-dom";
+import { useContext } from "react";
+import { userContext } from "../../contexts/userContext";
+import api from "../../utils/api";
+
 
 const Home = () => {
+  const navigate = useNavigate();
+  const { Token, setToken } = useContext(userContext);
+  const handleLogout = async () => {
+  try {
+    await api.post("/api/user-login/logout");
+
+    localStorage.removeItem("token");
+    setToken(null);
+
+    navigate("/");
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+
+
+
+
   return (
     <div className="home">
 
@@ -18,7 +42,16 @@ const Home = () => {
           <li><a href="#resume">Resume</a></li>
         </ul>
 
-        <button className="nav-btn">Get Started</button>
+
+            {Token ? (
+        <button className="nav-btn" onClick={handleLogout}>
+          Logout
+        </button>
+      ) : (
+        <button className="nav-btn" onClick={() => navigate("/login")}>
+          Get Started
+        </button>
+      )}
       </nav>
 
 
@@ -33,7 +66,7 @@ const Home = () => {
             Backend, Data Structures, System Design, and more.
           </p>
           <div className="hero-buttons">
-            <button className="primary-btn">Start Interview</button>
+            <button className="primary-btn" onClick={()=>{navigate("/domain")}}>Start Interview</button>
             <button className="secondary-btn">Analyze Resume</button>
           </div>
         </div>

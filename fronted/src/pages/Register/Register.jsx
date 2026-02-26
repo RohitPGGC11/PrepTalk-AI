@@ -3,6 +3,7 @@ import axios from 'axios'
 import './Register.css'
 import { userContext } from '../../contexts/userContext'
 import { Link,useNavigate } from 'react-router-dom'
+import api from '../../../../backend/utils/api'
 
 const Register = () => {
 
@@ -13,7 +14,7 @@ const Register = () => {
     password: "",
   })
   const [Loading, setLoading] = useState(false)
-  const { url } = useContext(userContext)
+  const { url,setToken } = useContext(userContext)
 
   const onChangeHandler = (e) => {
     setFormData({
@@ -27,11 +28,11 @@ const Register = () => {
 
     try {
       setLoading(true)
-      const response = await axios.post(`${url}/api/user/register`, formData)
+      const response = await api.post(`/api/user-login/register`, formData)
       if (response.data.success) {
         localStorage.setItem("token",response.data.accessToken)
-        console.log(response.data.accessToken)
-        navigate("/Home")
+        setToken(response.data.accessToken);
+        navigate("/")
         // alert("register");
       }
     } catch (error) {

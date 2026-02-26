@@ -1,24 +1,24 @@
-import {z} from "zod";
 import jwt from "jsonwebtoken";
-//validate the user credibility by token
+import {z} from "zod";
 
-export const ensureAuthenticate = (req,res,next) =>{
-    const authHeader =req.headers.authorization;
-    if(!authHeader){
-      return res.json({success:false,message:"token is not available"})
-    }
-    const token = authHeader.split(" ")[1];
-    try {
-        const decoded = jwt.verify(token,process.env.ACCESS_TOKEN_SECRET);
-        req.userId=decoded.id;
-        next()
-    } catch (error) {
-        
-        console.log(error);
-        return res.json({success:false,message:"correct jwt token is required"})
-    }
-   
-}
+
+export const verifyAccessToken = (req, res, next) => {
+  const authHeader = req.headers.authorization;
+
+  if (!authHeader || !authHeader.startsWith("Bearer "))
+    return res.status(401).json({ success: false, message: "No token" });
+
+  const token = authHeader.split(" ")[1];
+
+  try {
+    const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
+    req.user = decoded;
+    next();
+  } catch (err) {
+    return res.status(401).json({ success: false, message: "Token expired" });
+  }
+};
+
 
 //validate the credentials format SChema
 export const registerSchema = z.object({

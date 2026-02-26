@@ -4,6 +4,7 @@ import './Login.css'
 import { userContext } from '../../contexts/userContext'
 import { useNavigate } from 'react-router-dom'
 import {Link} from 'react-router-dom'
+import api from '../../../../backend/utils/api.js'
 const Login = () => {
 
   const navigate = useNavigate();
@@ -26,11 +27,12 @@ const Login = () => {
     e.preventDefault();
     try {
       setLoading(true)
-      const token = localStorage.getItem("token");
-      const response = await axios.post(`${url}/api/user/login`, formData, {headers:{Authorization:`Bearer ${token}`}})
+      const response = await api.post(`/api/user-login/login`, formData);
       if (response.data.success) {
+        localStorage.setItem("token", response.data.accessToken);
+        setToken(response.data.accessToken);
         console.log(response.data.message);
-        navigate("/Home");
+        navigate("/");
       }
       else {
         console.log(response.data.message)
@@ -49,8 +51,6 @@ const Login = () => {
     <div className="login-container">
       <form className="login-form" onSubmit={onSubmitHandler}>
         <h2>Login</h2>
-
-  
 
         <input
           type="email"
