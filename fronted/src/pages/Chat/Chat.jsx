@@ -1,7 +1,10 @@
-import React, { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect,useContext } from "react";
+
+import { useParams } from "react-router-dom";
+
+import api from "../../utils/api.js";
 import "./Chat.css";
 import { createSpeechRecognition } from "../../utils/speechRecognition.js";
-import axios from "axios";
 
 
 function SpeechToText() {
@@ -12,22 +15,22 @@ function SpeechToText() {
   const [question, setquestion] = useState(null);
   const [currentOrder, setcurrentOrder] = useState(1);
 
+  const {sessionId} = useParams()
+  
   const recognitionRef = useRef(null);
 
-  const url = "http://localhost:4000";
-
+ 
   useEffect(() => {
     fetchQuestion();
   }, [currentOrder]);
 
   const fetchQuestion = async () => {
     try {
-      const response = await axios.get(url + "/api/user/get-question", {
+      const response = await api.get(`/api/user/get-question`, {
         params: {
-          domain: "frontend",
-          level: "beginner",
+          sessionId:sessionId,
           order: currentOrder,
-        },
+        }
       });
 
       if (response.data.success) {
@@ -77,14 +80,14 @@ function SpeechToText() {
 
     try {
       setLoading(true);
-      const response = await axios.post(url + "/api/ollama/chat", {
+      const response = await api.post("/api/ollama/chat", {
       question: question,
       userAnswer: text,
       });
 
       if (response.data.success) {
 
-        const airesponse = response.data.data;
+        const airesponse = response.data.data.feedback;
         setmessage(prev=>[
           ...prev,
           {sender:"user" , text:text},

@@ -4,6 +4,7 @@ import routers from './routes/loginRoute.js';
 import AIRouter from './routes/AiRoute.js';
 import Adminrouter from './routes/adminRoutes.js';
 import userRouter from './routes/userRoute.js';
+import SessionRouter from './routes/SessionRoutes.js';
 
 import connectDB from './config/dbConnection.js';
 import cookieParser from "cookie-parser";
@@ -26,7 +27,7 @@ app.use("/api/user-login",routers)
 app.use("/api/ollama",AIRouter);
 app.use("/api/admin", Adminrouter);
 app.use("/api/user",userRouter);
-
+app.use("/api/session",SessionRouter);
 
 //ConnectDB
 connectDB();

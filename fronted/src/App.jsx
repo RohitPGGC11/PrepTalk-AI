@@ -27,7 +27,7 @@ const App = () => {
       <Route path="/admin/edit-form/:id" element={<EditForm/>}></Route>
 
       {/* CHAT AND ANYLATICS */}
-      <Route path="/chat" element={<Chat/>}></Route>
+      <Route path="/chat/:sessionId" element={<Chat/>}></Route>
       <Route path="/domain" element={<DomainSelector/>}></Route>
       </Route>
 

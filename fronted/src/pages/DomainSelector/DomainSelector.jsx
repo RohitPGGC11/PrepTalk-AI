@@ -4,15 +4,16 @@ import { useContext } from "react";
 import { userContext } from "../../contexts/userContext";
 import { useNavigate } from "react-router-dom";
 
+import api from "../../utils/api";
 const domains = [
   { id: "frontend",  label: "Frontend",      icon: "⬡", color: "#6366f1", desc: "HTML, CSS, React, Vue"        },
-  { id: "backend",   label: "Backend",       icon: "⬢", color: "#f97316", desc: "Node, Django, REST APIs"      },
-  { id: "fullstack", label: "Full-Stack",    icon: "◈", color: "#8b5cf6", desc: "End-to-end development"       },
+  { id: "backend",   label: "backend",       icon: "⬢", color: "#f97316", desc: "Node, Django, REST APIs"      },
+  { id: "full-stack", label: "Full-Stack",    icon: "◈", color: "#8b5cf6", desc: "End-to-end development"       },
   { id: "dsa",       label: "DSA",           icon: "◉", color: "#0ea5e9", desc: "Algorithms & Data Structures" },
-  { id: "devops",    label: "DevOps",        icon: "⬟", color: "#d97706", desc: "CI/CD, Docker, Kubernetes"    },
-  { id: "ml",        label: "ML / AI",       icon: "◎", color: "#ec4899", desc: "Models, Training, Math"       },
+  { id: "devOps",    label: "DevOps",        icon: "⬟", color: "#d97706", desc: "CI/CD, Docker, Kubernetes"    },
+  { id: "AI/Ml",        label: "ML / AI",       icon: "◎", color: "#ec4899", desc: "Models, Training, Math"       },
   { id: "mobile",    label: "Mobile",        icon: "⬠", color: "#10b981", desc: "iOS, Android, React Native"   },
-  { id: "system",    label: "System Design", icon: "◫", color: "#6366f1", desc: "Architecture & Scalability"   },
+  { id: "system-design",    label: "System Design", icon: "◫", color: "#6366f1", desc: "Architecture & Scalability"   },
 ];
 
 const tiers = [
@@ -23,9 +24,31 @@ const tiers = [
 
 export default function DomainSelector() {
 
-  const {selectedDomain, setSelectedDomain,selectedTier,   setSelectedTier,confirmed,setConfirmed} =useContext(userContext)
-  const navigate = useNavigate();
+const navigate = useNavigate();
   
+const {selectedDomain, 
+    setSelectedDomain,
+    selectedTier,   
+    setSelectedTier,
+    confirmed,
+    setConfirmed} =useContext(userContext)
+
+const createSession = async()=>{
+  try {
+    const response= await api.post("/api/session/create",{domain:selectedDomain,difficultyTier:selectedTier});
+      if(response.data.success){
+      const sessionId = response.data.sessionId;
+      navigate(`/chat/${sessionId}`);
+      }else{
+          console.log(response.data.message);
+        }
+  } catch (error) {
+    console.log(error);
+    
+  }
+  
+}
+
  
   const domainObj = domains.find((d) => d.id === selectedDomain);
   const tierObj   = tiers.find((t)   => t.id === selectedTier);
@@ -101,7 +124,7 @@ export default function DomainSelector() {
               You're set to explore <strong style={{ color: domainObj.color }}>{domainObj.label}</strong> at{" "}
               <strong style={{ color: tierObj.accent }}>{tierObj.label}</strong> level. Let's go!
             </p>
-            <button className="ds-start-btn"  onClick={()=>{navigate("/chat")}}>🚀 Start Interview</button>
+            <button className="ds-start-btn"  onClick={createSession}>🚀 Start Interview</button>
             <button className="ds-reset-btn" onClick={reset}>← Change selection</button>
           </div>
         )}

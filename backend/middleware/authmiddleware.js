@@ -33,7 +33,7 @@ export const validate =(schema) =>
       schema.parse(req.body);
       next();
     } catch (error) {
-      return res.json({
+      return res.status(400).json({
         success: false,
         message:"somthing is not correct",
       });

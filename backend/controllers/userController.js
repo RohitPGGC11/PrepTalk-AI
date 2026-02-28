@@ -1,21 +1,31 @@
 // controllers/userController.js
 import Question from "../models/Question.js";
+import Session from "../models/SessionModel.js"
 
 export const fetchQuestion = async (req, res) => {
   try {
-    const { domain, level, order } = req.query;
+    const { sessionId,order } = req.query;
 
     // Basic validation
-    if (!domain || !level || !order) {
+    if (!sessionId|| !order) {
       return res.status(400).json({
         success: false,
-        message: "Domain, level and order are required"
+        message: "sessionId and order are required"
       });
     }
 
+    const session = await Session.findById(sessionId);
+    if(!session){
+      return res.status(404).json({
+        success:false,
+        message:"Session Not found"
+      })
+    }
+
+
     const question = await Question.findOne({
-      domain: domain,
-      difficultyTier: level,
+      domain: session.domain,
+      difficultyTier: session.difficultyTier,
       order: Number(order),
       isActive: true
     }).select("-__v"); // optional: remove __v
@@ -29,7 +39,7 @@ export const fetchQuestion = async (req, res) => {
 
     res.status(200).json({
       success: true,
-      data: question.question
+      data:question.question
     });
 
   } catch (error) {

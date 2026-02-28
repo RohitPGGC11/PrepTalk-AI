@@ -4,7 +4,7 @@ const questionSchema = new mongoose.Schema({
   domain: {
     type: String,
     required: true,
-    enum: ["frontend", "backend", "fullstack", "dsa", "hr"]
+    enum: ["frontend", "backend","full-stack","dsa","DevOps","AI/ML","mobile","system-design"]
   },
 
   difficultyTier: {
