@@ -1,0 +1,547 @@
+/* ═══════════════════════════════════════════════════════════════
+   ANALYTICS COMMAND CENTER — Dashboard Stylesheet
+   ═══════════════════════════════════════════════════════════════ */
+
+@import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Bebas+Neue&display=swap');
+
+/* ─── CSS VARIABLES ─────────────────────────────────────────── */
+:root {
+  --bg:           #060A14;
+  --card:         #0D1526;
+  --border:       #1A2845;
+  --accent1:      #00D4FF;
+  --accent2:      #FF6B6B;
+  --accent3:      #A78BFA;
+  --accent4:      #34D399;
+  --accent5:      #FBBF24;
+  --text:         #E2E8F0;
+  --muted:        #64748B;
+  --score-good:   #34D399;
+  --score-mid:    #FBBF24;
+  --score-bad:    #FF6B6B;
+
+  --font-mono:    'Space Mono', monospace;
+  --font-display: 'Bebas Neue', sans-serif;
+
+  --radius-sm:    6px;
+  --radius-md:    12px;
+  --radius-full:  9999px;
+
+  --shadow-glow:  0 8px 32px rgba(0, 212, 255, 0.08);
+  --transition:   0.2s ease;
+}
+
+/* ─── RESET & BASE ───────────────────────────────────────────── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-mono);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ─── SCROLLBAR ──────────────────────────────────────────────── */
+::-webkit-scrollbar          { width: 6px; }
+::-webkit-scrollbar-track    { background: var(--bg); }
+::-webkit-scrollbar-thumb    { background: var(--border); border-radius: 3px; }
+
+/* ─── ANIMATIONS ─────────────────────────────────────────────── */
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.5; }
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+@keyframes fadeSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ─── UTILITY CLASSES ────────────────────────────────────────── */
+.pulse { animation: pulse 2s infinite; }
+.spin  { animation: spin 1s linear infinite; }
+
+.fade-up {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.fade-up.in {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ─── CARDS ──────────────────────────────────────────────────── */
+.card {
+  background:    var(--card);
+  border:        1px solid var(--border);
+  border-radius: var(--radius-md);
+}
+
+.hover-card {
+  transition: transform var(--transition), box-shadow var(--transition);
+}
+
+.hover-card:hover {
+  transform:  translateY(-3px);
+  box-shadow: var(--shadow-glow);
+}
+
+/* ─── DASHBOARD ROOT ─────────────────────────────────────────── */
+.dashboard {
+  min-height:  100vh;
+  background:  var(--bg);
+  font-family: var(--font-mono);
+  color:       var(--text);
+  padding-bottom: 60px;
+}
+
+/* ─── HEADER ─────────────────────────────────────────────────── */
+.dashboard__header {
+  background:       linear-gradient(180deg, var(--card) 0%, var(--bg) 100%);
+  border-bottom:    1px solid var(--border);
+  padding:          28px 40px 0;
+  position:         sticky;
+  top:              0;
+  z-index:          100;
+  backdrop-filter:  blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.dashboard__header-top {
+  display:         flex;
+  align-items:     center;
+  justify-content: space-between;
+  margin-bottom:   20px;
+}
+
+.dashboard__eyebrow {
+  font-size:      11px;
+  letter-spacing: 4px;
+  color:          var(--accent1);
+  margin-bottom:  4px;
+  text-transform: uppercase;
+}
+
+.dashboard__title {
+  font-family:               var(--font-display);
+  font-size:                 38px;
+  letter-spacing:            2px;
+  background:                linear-gradient(90deg, #00D4FF, #A78BFA);
+  -webkit-background-clip:   text;
+  -webkit-text-fill-color:   transparent;
+  background-clip:           text;
+}
+
+/* ─── FILTERS ────────────────────────────────────────────────── */
+.dashboard__filters {
+  display: flex;
+  gap:     12px;
+}
+
+.filter-select {
+  background:  var(--card);
+  border:      1px solid var(--border);
+  color:       var(--text);
+  padding:     8px 14px;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-mono);
+  font-size:   11px;
+  cursor:      pointer;
+  outline:     none;
+  transition:  border-color var(--transition);
+}
+
+.filter-select:focus {
+  border-color: var(--accent1);
+}
+
+/* ─── TAB BAR ────────────────────────────────────────────────── */
+.dashboard__tabs {
+  display: flex;
+  gap:     4px;
+}
+
+.tab-btn {
+  background:     none;
+  border:         none;
+  border-bottom:  2px solid transparent;
+  cursor:         pointer;
+  padding:        10px 20px;
+  font-family:    var(--font-mono);
+  font-size:      11px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color:          var(--muted);
+  transition:     color var(--transition), border-color var(--transition);
+}
+
+.tab-btn:hover {
+  color: var(--accent1);
+}
+
+.tab-btn.active {
+  color:              var(--accent1);
+  border-bottom-color: var(--accent1);
+}
+
+/* ─── MAIN CONTENT AREA ──────────────────────────────────────── */
+.dashboard__body {
+  padding:    32px 40px;
+  max-width:  1400px;
+  margin:     0 auto;
+}
+
+/* ─── KPI STRIP ──────────────────────────────────────────────── */
+.kpi-grid {
+  display:               grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap:                   16px;
+  margin-bottom:         28px;
+}
+
+.kpi-card {
+  padding: 24px;
+}
+
+.kpi-card__label {
+  font-size:      10px;
+  letter-spacing: 3px;
+  color:          var(--muted);
+  text-transform: uppercase;
+  margin-bottom:  8px;
+}
+
+.kpi-card__value {
+  font-family:    var(--font-display);
+  font-size:      28px;
+  letter-spacing: 1px;
+}
+
+.kpi-card__sub {
+  font-size:    11px;
+  color:        var(--muted);
+  margin-top:   4px;
+}
+
+/* ─── SECTION TITLE ──────────────────────────────────────────── */
+.section-title {
+  font-size:      10px;
+  letter-spacing: 3px;
+  color:          var(--muted);
+  text-transform: uppercase;
+  margin-bottom:  20px;
+}
+
+.section-title--lg {
+  margin-bottom: 24px;
+}
+
+/* ─── TWO-COLUMN LAYOUT ──────────────────────────────────────── */
+.two-col {
+  display:               grid;
+  grid-template-columns: 1fr 1fr;
+  gap:                   20px;
+  margin-bottom:         20px;
+}
+
+.three-col {
+  display:               grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap:                   16px;
+}
+
+/* ─── PADDED CARDS ───────────────────────────────────────────── */
+.card--padded    { padding: 28px; }
+.card--padded-sm { padding: 22px; }
+
+/* ─── METRIC PROGRESS BARS ───────────────────────────────────── */
+.metric-row {
+  margin-bottom: 14px;
+}
+
+.metric-row__header {
+  display:         flex;
+  justify-content: space-between;
+  font-size:       11px;
+  margin-bottom:   4px;
+}
+
+.metric-row__label { color: var(--text); }
+
+.metric-row__value {
+  font-weight: 700;
+}
+
+.metric-bar {
+  height:        6px;
+  border-radius: 3px;
+  background:    var(--border);
+  overflow:      hidden;
+  margin-top:    4px;
+}
+
+.metric-bar__fill {
+  height:        100%;
+  border-radius: 3px;
+  transition:    width 1s ease;
+}
+
+/* ─── SESSION SCORECARD ──────────────────────────────────────── */
+.session-row {
+  display:     flex;
+  align-items: center;
+  gap:         16px;
+  margin-bottom: 18px;
+}
+
+.session-row__avatar {
+  width:           36px;
+  height:          36px;
+  border-radius:   50%;
+  border:          2px solid;
+  display:         flex;
+  align-items:     center;
+  justify-content: center;
+  font-size:       11px;
+  font-weight:     700;
+  flex-shrink:     0;
+}
+
+.session-row__info { flex: 1; }
+
+.session-row__name-row {
+  display:         flex;
+  justify-content: space-between;
+  font-size:       11px;
+  margin-bottom:   5px;
+}
+
+.session-row__attempts {
+  font-size:  10px;
+  color:      var(--muted);
+  width:      60px;
+  text-align: right;
+}
+
+/* ─── CHART WRAPPER ──────────────────────────────────────────── */
+.chart-wrap {
+  padding:       28px;
+  margin-bottom: 20px;
+}
+
+/* ─── COMPARISON SESSION CARDS ───────────────────────────────── */
+.session-card__header {
+  display:         flex;
+  justify-content: space-between;
+  margin-bottom:   16px;
+}
+
+.session-card__session-name {
+  font-family:    var(--font-display);
+  font-size:      22px;
+  letter-spacing: 1px;
+}
+
+.session-card__score {
+  font-family:    var(--font-display);
+  font-size:      22px;
+}
+
+.session-card__metric-row {
+  display:         flex;
+  justify-content: space-between;
+  font-size:       10px;
+  color:           var(--muted);
+  margin-bottom:   6px;
+  padding:         4px 0;
+  border-bottom:   1px solid var(--border);
+}
+
+/* ─── DETAILS TAB ────────────────────────────────────────────── */
+.details-grid { display: grid; gap: 12px; }
+
+.detail-card {
+  padding:               22px;
+  display:               grid;
+  grid-template-columns: auto 1fr auto;
+  gap:                   20px;
+  align-items:           center;
+}
+
+.detail-card__score-block {
+  text-align: center;
+  min-width:  80px;
+}
+
+.detail-card__score-value {
+  font-family:  var(--font-display);
+  font-size:    32px;
+  line-height:  1;
+}
+
+.detail-card__score-label {
+  font-size:      9px;
+  letter-spacing: 2px;
+  color:          var(--muted);
+  text-transform: uppercase;
+}
+
+.detail-card__tags {
+  display:       flex;
+  gap:           12px;
+  margin-bottom: 10px;
+}
+
+.tag {
+  font-size:     10px;
+  padding:       3px 10px;
+  border-radius: var(--radius-full);
+  letter-spacing: 1px;
+}
+
+.tag--question {
+  background: var(--border);
+  color:      var(--muted);
+}
+
+.detail-card__metrics {
+  display:   flex;
+  gap:       8px;
+  flex-wrap: wrap;
+}
+
+.detail-card__metric-chip {
+  font-size: 10px;
+  color:     var(--muted);
+}
+
+.detail-card__feedback {
+  font-size:    11px;
+  color:        var(--muted);
+  margin-top:   8px;
+  font-style:   italic;
+  border-left:  2px solid var(--border);
+  padding-left: 8px;
+}
+
+.detail-card__mini-grid {
+  display:               grid;
+  grid-template-columns: 1fr 1fr;
+  gap:                   6px;
+  min-width:             160px;
+}
+
+.mini-stat {
+  background:    var(--bg);
+  border-radius: var(--radius-sm);
+  padding:       6px 10px;
+  text-align:    center;
+}
+
+.mini-stat__value {
+  font-size:   13px;
+  font-weight: 700;
+}
+
+.mini-stat__label {
+  font-size:      9px;
+  color:          var(--muted);
+  letter-spacing: 1px;
+}
+
+/* ─── TOOLTIP (Recharts custom) ──────────────────────────────── */
+.chart-tooltip {
+  background:    var(--card);
+  border:        1px solid var(--border);
+  border-radius: 8px;
+  padding:       10px 14px;
+  font-size:     12px;
+  color:         var(--text);
+  font-family:   var(--font-mono);
+}
+
+.chart-tooltip__label {
+  font-weight:   700;
+  margin-bottom: 4px;
+  color:         var(--accent1);
+}
+
+/* ─── SCORE COLORS ───────────────────────────────────────────── */
+.score-good  { color: var(--score-good); }
+.score-mid   { color: var(--score-mid); }
+.score-bad   { color: var(--score-bad); }
+
+/* ─── RESPONSIVE ─────────────────────────────────────────────── */
+@media (max-width: 1100px) {
+  .kpi-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .two-col,
+  .three-col {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .dashboard__header {
+    padding: 20px 20px 0;
+  }
+
+  .dashboard__header-top {
+    flex-direction: column;
+    align-items:    flex-start;
+    gap:            16px;
+  }
+
+  .dashboard__title {
+    font-size: 28px;
+  }
+
+  .dashboard__body {
+    padding: 20px;
+  }
+
+  .kpi-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .detail-card {
+    grid-template-columns: auto 1fr;
+  }
+
+  .detail-card__mini-grid {
+    display: none;
+  }
+
+  .tab-btn {
+    padding:       8px 12px;
+    font-size:     10px;
+    letter-spacing: 1px;
+  }
+}
+
+@media (max-width: 480px) {
+  .kpi-grid {
+    grid-template-columns: 1fr;
+  }
+}

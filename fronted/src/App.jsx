@@ -10,6 +10,7 @@ import DomainSelector from './pages/DomainSelector/DomainSelector'
 import ProtectedLayout from './components/protectedRoute/ProtectedRoute'
 
 import axios from "axios";
+import Dashboard from './pages/Dashboard/Dashboard'
 axios.defaults.withCredentials = true; 
 
 const App = () => {
@@ -29,6 +30,7 @@ const App = () => {
       {/* CHAT AND ANYLATICS */}
       <Route path="/chat/:sessionId" element={<Chat/>}></Route>
       <Route path="/domain" element={<DomainSelector/>}></Route>
+      <Route path="/dashboard" element={<Dashboard/>}></Route>
       </Route>
 
     </Routes>

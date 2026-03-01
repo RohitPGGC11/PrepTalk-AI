@@ -11,10 +11,12 @@ function SpeechToText() {
 
   const [text, setText] = useState("");
   const [message, setmessage] = useState([])
+  
   const [loading, setLoading] = useState(false);
   const [question, setquestion] = useState(null);
   const [currentOrder, setcurrentOrder] = useState(1);
 
+  const [questionId, setquestionId] = useState(null)
   const {sessionId} = useParams()
   
   const recognitionRef = useRef(null);
@@ -34,8 +36,14 @@ function SpeechToText() {
       });
 
       if (response.data.success) {
-        const newQuestion =response.data.data;
+
+        const questionData =response.data.data;
+        const newQuestion=questionData.question;
+        
+        const newQuestionId=questionData.questionId;
+        setquestionId(newQuestionId);
         setquestion(newQuestion);
+
         setmessage(prev=>[
           ...prev,
           {sender:"ai",text:newQuestion}
@@ -76,6 +84,7 @@ function SpeechToText() {
     if (!text.trim()) {
       alert("Please speak something first!");
       return;
+
     }
 
     try {
@@ -83,11 +92,13 @@ function SpeechToText() {
       const response = await api.post("/api/ollama/chat", {
       question: question,
       userAnswer: text,
+      questionId:questionId,
+      sessionId:sessionId,
       });
 
       if (response.data.success) {
 
-        const airesponse = response.data.data.feedback;
+        const airesponse = response.data.data;
         setmessage(prev=>[
           ...prev,
           {sender:"user" , text:text},

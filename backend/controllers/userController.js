@@ -23,14 +23,14 @@ export const fetchQuestion = async (req, res) => {
     }
 
 
-    const question = await Question.findOne({
+    const questionObject = await Question.findOne({
       domain: session.domain,
       difficultyTier: session.difficultyTier,
       order: Number(order),
       isActive: true
     }).select("-__v"); // optional: remove __v
 
-    if (!question) {
+    if (!questionObject) {
       return res.status(404).json({
         success: false,
         message: "Question not found"
@@ -39,7 +39,10 @@ export const fetchQuestion = async (req, res) => {
 
     res.status(200).json({
       success: true,
-      data:question.question
+      data:{
+        "questionId":questionObject._id,
+        "question": questionObject.question
+      }
     });
 
   } catch (error) {

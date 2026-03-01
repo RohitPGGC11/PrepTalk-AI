@@ -1,7 +1,8 @@
 import ollama from "ollama";
-
+import Answer from "../models/AnswerAttemptModel.js";
+import Session from "../models/SessionModel.js";
 export const chatController = async (req, res) => {
-  const { question, userAnswer } = req.body;
+  const { question, userAnswer ,questionId,sessionId} = req.body;
 
   if (!question || !userAnswer) {
     return res.status(400).json({
@@ -78,10 +79,53 @@ ${userAnswer}
     });
 
     const parsed = JSON.parse(response.message.content);
+    const rspData=parsed;
 
+    //calculating the overall score
+    const overall =(rspData.accuracy +rspData.depth +rspData.clarity +rspData.problemSolving +
+                    rspData.exampleUsage +rspData.communicationStructure +rspData.grammar) / 7;
+
+    try {
+      const NewAnswer = new Answer({
+      sessionId:sessionId,
+      questionId:questionId,
+      attemtedquestion:question,
+      userAnswer:userAnswer,
+      accuracy:rspData.accuracy,
+      depth:rspData.depth,
+      clarity:rspData.clarity,
+      problemSolving:rspData.problemSolving,
+      exampleUsage:rspData.exampleUsage,
+      communicationStructure:rspData.communicationStructure,
+      grammar:rspData.grammar,
+      overallScore:overall,
+      feedback:rspData.feedback
+      })
+      await NewAnswer.save();
+    } catch (error) {
+      console.log(error);
+    }
+
+    //updating the total Question AND avgScore in that session
+    const session = await Session.findById(sessionId);
+              if (!session) {
+          return res.status(404).json({
+            success: false,
+            error: "Session not found"
+          });
+        }
+      const newTotal = session.totalQuestions + 1;
+      const newAvg =
+        ((session.avgScore * session.totalQuestions) + overall) / newTotal;
+
+      session.totalQuestions = newTotal;
+      session.avgScore = newAvg;
+      await session.save();
+      
+//returning the AI response feedback to the user
     return res.status(200).json({
       success: true,
-      data: parsed
+      data: parsed.feedback
     });
 
   } catch (error) {

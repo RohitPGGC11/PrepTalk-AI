@@ -15,6 +15,7 @@ SessionRouter.get("/my-sessions", verifyAccessToken, getUserSessions);
 /* GET SINGLE SESSION */
 SessionRouter.get("/:sessionId", verifyAccessToken, getSessionById);
 
+
 /* END SESSION */
 SessionRouter.put("/:sessionId/end", verifyAccessToken, endSession);
 
