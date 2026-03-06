@@ -119,7 +119,6 @@ export const getUserSessions = async (req, res) => {
 
     res.json({
       success: true,
-      count: sessions.length,
       data: sessions
     });
 

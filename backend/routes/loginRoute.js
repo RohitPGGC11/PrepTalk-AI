@@ -1,6 +1,6 @@
 import express from "express";
 import { register, login, refresh, logout } from "../controllers/loginController.js";
-import { registerSchema ,validate ,verifyAccessToken} from "../middleware/authmiddleware.js";
+import { registerSchema ,validate ,verifyAccessToken} from "../middleware/authMiddleware.js";
 const router = express.Router();
 
 router.post("/register",validate(registerSchema) ,register);

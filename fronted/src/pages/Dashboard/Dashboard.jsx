@@ -1,389 +1,324 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
+import "./Dashboard.css";
 import {
-  RadarChart, Radar, PolarGrid, PolarAngleAxis, PolarRadiusAxis,
-  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
-  LineChart, Line, Legend,
+  LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer,
+  RadarChart, Radar, PolarGrid, PolarAngleAxis,
 } from "recharts";
-import "./Dashboard.css"
-/* ─── SAMPLE DATA ─── */
-const raw = [
-  { sessionId:"S001", questionId:"Q1", accuracy:88, depth:72, clarity:91, problemSolving:85, exampleUsage:60, communicationStructure:78, grammar:95, overallScore:81, feedback:"Strong clarity but lean on examples." },
-  { sessionId:"S001", questionId:"Q2", accuracy:74, depth:88, clarity:65, problemSolving:90, exampleUsage:82, communicationStructure:70, grammar:88, overallScore:79, feedback:"Excellent problem-solving, work on clarity." },
-  { sessionId:"S001", questionId:"Q3", accuracy:95, depth:80, clarity:89, problemSolving:77, exampleUsage:91, communicationStructure:92, grammar:97, overallScore:89, feedback:"Well-rounded answer." },
-  { sessionId:"S002", questionId:"Q1", accuracy:60, depth:55, clarity:70, problemSolving:65, exampleUsage:45, communicationStructure:60, grammar:80, overallScore:62, feedback:"Needs more depth and examples." },
-  { sessionId:"S002", questionId:"Q2", accuracy:82, depth:78, clarity:80, problemSolving:84, exampleUsage:76, communicationStructure:82, grammar:90, overallScore:82, feedback:"Solid performance." },
-  { sessionId:"S002", questionId:"Q3", accuracy:70, depth:65, clarity:75, problemSolving:72, exampleUsage:68, communicationStructure:71, grammar:85, overallScore:72, feedback:"Average, room to grow." },
-  { sessionId:"S003", questionId:"Q1", accuracy:93, depth:91, clarity:95, problemSolving:92, exampleUsage:88, communicationStructure:94, grammar:98, overallScore:93, feedback:"Exceptional answer." },
-  { sessionId:"S003", questionId:"Q2", accuracy:85, depth:82, clarity:88, problemSolving:87, exampleUsage:79, communicationStructure:85, grammar:92, overallScore:85, feedback:"Very strong across the board." },
-  { sessionId:"S003", questionId:"Q3", accuracy:78, depth:74, clarity:80, problemSolving:76, exampleUsage:72, communicationStructure:78, grammar:88, overallScore:78, feedback:"Good but inconsistent." },
+
+// ── Mock Data — replace with your real API fetch ──────────────────────────────
+// Session shape matches your DB exactly
+
+const sessions = [
+  { _id: "69a284be0a3c5ed3a8031c07", userId: "69a01b9435ee66c8d714fdc3", domain: "frontend", difficultyTier: "beginner",     status: "active",    totalQuestions: 4, avgScore: 1.96, createdAt: "2026-02-28T06:01:34.022Z", updatedAt: "2026-03-01T06:11:13.197Z" },
+  { _id: "69a284be0a3c5ed3a8031c08", userId: "69a01b9435ee66c8d714fdc3", domain: "frontend", difficultyTier: "intermediate", status: "completed", totalQuestions: 8, avgScore: 6.8,  createdAt: "2026-02-27T09:10:00.000Z", updatedAt: "2026-02-27T11:00:00.000Z" },
+  { _id: "69a284be0a3c5ed3a8031c09", userId: "69a01b9435ee66c8d714fdc3", domain: "backend",  difficultyTier: "beginner",     status: "completed", totalQuestions: 6, avgScore: 8.1,  createdAt: "2026-02-24T14:30:00.000Z", updatedAt: "2026-02-24T16:00:00.000Z" },
+  { _id: "69a284be0a3c5ed3a8031c10", userId: "69a01b9435ee66c8d714fdc3", domain: "dsa",      difficultyTier: "intermediate", status: "completed", totalQuestions: 7, avgScore: 5.9,  createdAt: "2026-02-20T11:00:00.000Z", updatedAt: "2026-02-20T12:30:00.000Z" },
 ];
 
-/* ─── CONSTANTS ─── */
-const METRICS = ["accuracy","depth","clarity","problemSolving","exampleUsage","communicationStructure","grammar"];
-const METRIC_LABELS = {
-  accuracy:"Accuracy", depth:"Depth", clarity:"Clarity",
-  problemSolving:"Problem Solving", exampleUsage:"Example Usage",
-  communicationStructure:"Structure", grammar:"Grammar",
-};
-const SESSIONS  = [...new Set(raw.map(d => d.sessionId))];
-const QUESTIONS = [...new Set(raw.map(d => d.questionId))];
-// Dynamic per-session colours — used only where CSS classes can't carry a per-index value
-const SESSION_COLORS = ["#00D4FF","#FF6B6B","#A78BFA","#34D399","#FBBF24"];
+// Answer shape matches your DB exactly (includes communicationStructure)
+const answers = [
+  { _id: "69a3dd1e085e9b8f5ba9bb79", sessionId: "69a284be0a3c5ed3a8031c07", questionId: "69a3db8b085e9b8f5ba9bb68", attemtedquestion: "What is HTML and why is it used?",      userAnswer: "HTML (HyperText Markup Language) is the standard language used to create web pages.\nIt structures content using elements like headings, paragraphs, links, and images.\nIt is used to define the layout and structure of content displayed in a web browser.", accuracy: 9, depth: 8, clarity: 8, problemSolving: 6, exampleUsage: 5, communicationStructure: 7, grammar: 9, overallScore: 7.428571428571429, feedback: "Your answer is mostly accurate and well-structured. You could improve by providing more specific examples of how HTML elements are used to define layout and structure.", createdAt: "2026-03-01T06:30:54.846Z" },
+  { _id: "69a3dd1e085e9b8f5ba9bb80", sessionId: "69a284be0a3c5ed3a8031c07", questionId: "69a3db8b085e9b8f5ba9bb69", attemtedquestion: "What is CSS specificity?",              userAnswer: "CSS specificity determines which styles are applied when multiple rules target the same element. It is calculated based on the type of selectors — IDs have the highest weight, followed by classes, then element selectors.", accuracy: 7, depth: 6, clarity: 8, problemSolving: 5, exampleUsage: 7, communicationStructure: 6, grammar: 9, overallScore: 6.857142857142857, feedback: "Solid understanding shown. Add more depth on how specificity is actually calculated with numbers." },
+  { _id: "69a3dd1e085e9b8f5ba9bb81", sessionId: "69a284be0a3c5ed3a8031c07", questionId: "69a3db8b085e9b8f5ba9bb70", attemtedquestion: "Explain the CSS Box Model",             userAnswer: "The CSS box model wraps every HTML element in a box made of content, padding, border, and margin.\nContent is the actual text or image.\nPadding is space inside the border.\nBorder surrounds the padding.\nMargin is the space outside the border.", accuracy: 10, depth: 9, clarity: 9, problemSolving: 7, exampleUsage: 8, communicationStructure: 9, grammar: 10, overallScore: 8.857142857142858, feedback: "Excellent response! Clear structure, accurate content, and great use of examples." },
+  { _id: "69a3dd1e085e9b8f5ba9bb82", sessionId: "69a284be0a3c5ed3a8031c07", questionId: "69a3db8b085e9b8f5ba9bb71", attemtedquestion: "Difference between let, var, const?",   userAnswer: "var is function-scoped and can be re-declared. let is block-scoped and can be reassigned but not re-declared. const is block-scoped and cannot be reassigned after declaration. let and const were introduced in ES6.", accuracy: 9, depth: 8, clarity: 9, problemSolving: 8, exampleUsage: 9, communicationStructure: 8, grammar: 9, overallScore: 8.571428571428571, feedback: "Great answer with relevant examples and clear distinctions between all three." },
+];
 
-/* ─── HELPERS ─── */
-const avg = arr => Math.round(arr.reduce((a, b) => a + b, 0) / arr.length);
+// ── Helpers ───────────────────────────────────────────────────────────────────
 
-function scoreClass(score) {
-  if (score >= 85) return "score-good";
-  if (score >= 70) return "score-mid";
-  return "score-bad";
+function scoreColor(score) {
+  if (score >= 8) return "#4ade80";
+  if (score >= 6) return "#facc15";
+  return "#f87171";
 }
 
-function scoreHex(score) {
-  if (score >= 85) return "var(--score-good)";
-  if (score >= 70) return "var(--score-mid)";
-  return "var(--score-bad)";
+function formatDate(iso) {
+  return new Date(iso).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
 }
 
-/* ─── CUSTOM RECHARTS TOOLTIP ─── */
-const CustomTooltip = ({ active, payload, label }) => {
-  if (!active || !payload?.length) return null;
-  return (
-    <div className="chart-tooltip">
-      <p className="chart-tooltip__label">{label}</p>
-      {payload.map((p, i) => (
-        <p key={i} style={{ color: p.color }}>{p.name}: <b>{p.value}</b></p>
-      ))}
-    </div>
-  );
-};
+const CHART_LINE  = "#818cf8";
+const CHART_RADAR = "#6366f1";
 
-/* ═══════════════════════════════════════════════════════════════
-   MAIN DASHBOARD COMPONENT
-   ═══════════════════════════════════════════════════════════════ */
+function average(arr, key) {
+  return parseFloat((arr.reduce((sum, a) => sum + a[key], 0) / arr.length).toFixed(1));
+}
+
+// ── Main Component ────────────────────────────────────────────────────────────
+
 export default function Dashboard() {
-  const [selectedSession,  setSelectedSession]  = useState("All");
-  const [selectedQuestion, setSelectedQuestion] = useState("All");
-  const [activeTab, setActiveTab] = useState("overview");
-  const [animIn,    setAnimIn]    = useState(false);
+  const [page, setPage] = useState("current");
+  const [selectedSession, setSelectedSession] = useState(sessions[0]);
+  const [openAnswer, setOpenAnswer] = useState(null);
 
-  useEffect(() => { setTimeout(() => setAnimIn(true), 50); }, []);
-
-  /* ── Derived data ── */
-  const filtered = raw.filter(d =>
-    (selectedSession  === "All" || d.sessionId  === selectedSession) &&
-    (selectedQuestion === "All" || d.questionId === selectedQuestion)
-  );
-
-  const overallAvg = avg(filtered.map(d => d.overallScore || avg(METRICS.map(m => d[m]))));
-
-  const radarData = METRICS.map(m => ({
-    subject: METRIC_LABELS[m],
-    value:   avg(filtered.map(d => d[m])),
-  }));
-
-  const barData = QUESTIONS.map(q => {
-    const qData = filtered.filter(d => d.questionId === q);
-    if (!qData.length) return null;
-    const obj = { question: q };
-    SESSIONS.forEach(s => {
-      const sd = qData.find(d => d.sessionId === s);
-      if (sd) obj[s] = sd.overallScore || avg(METRICS.map(m => sd[m]));
-    });
-    return obj;
-  }).filter(Boolean);
-
-  const lineData = METRICS.map(m => ({
-    metric: METRIC_LABELS[m],
-    ...Object.fromEntries(
-      SESSIONS.map(s => [s, avg(filtered.filter(d => d.sessionId === s).map(d => d[m]))])
-    ),
-  }));
-
-  const sessionSummary = SESSIONS.map(s => {
-    const sd = raw.filter(d => d.sessionId === s);
-    return { session: s, score: avg(sd.map(d => d.overallScore || avg(METRICS.map(m => d[m])))), attempts: sd.length };
-  }).sort((a, b) => b.score - a.score);
-
-  const weakestMetric = METRICS.reduce((a, b) =>
-    avg(filtered.map(d => d[a])) < avg(filtered.map(d => d[b])) ? a : b
-  );
-
-  const tabs = ["overview", "radar", "comparison", "details"];
-  const animClass = `fade-up ${animIn ? "in" : ""}`;
+  const sessionAnswers = answers.filter((a) => a.sessionId === selectedSession._id);
+  const avgScore = sessionAnswers.length
+    ? sessionAnswers.reduce((sum, a) => sum + a.overallScore, 0) / sessionAnswers.length
+    : 0;
 
   return (
-    <div className="dashboard">
+    <div className="app">
 
-      {/* ══ HEADER ══ */}
-      <header className="dashboard__header">
-        <div className={`dashboard__header-top ${animClass}`}>
-          <div>
-            <p className="dashboard__eyebrow">Performance Intelligence</p>
-            <h1 className="dashboard__title">ANALYTICS COMMAND CENTER</h1>
-          </div>
-          <div className="dashboard__filters">
-            <select className="filter-select" value={selectedSession} onChange={e => setSelectedSession(e.target.value)}>
-              <option value="All">All Sessions</option>
-              {SESSIONS.map(s => <option key={s}>{s}</option>)}
-            </select>
-            <select className="filter-select" value={selectedQuestion} onChange={e => setSelectedQuestion(e.target.value)}>
-              <option value="All">All Questions</option>
-              {QUESTIONS.map(q => <option key={q}>{q}</option>)}
-            </select>
-          </div>
+      {/* ── Header ── */}
+      <header className="header">
+        <div className="header-brand">
+          <span className="brand-icon">◈</span>
+          <span className="brand-name">PrepTalk AI</span>
         </div>
-
-        <nav className="dashboard__tabs">
-          {tabs.map(t => (
-            <button key={t} className={`tab-btn ${activeTab === t ? "active" : ""}`} onClick={() => setActiveTab(t)}>
-              {t}
-            </button>
-          ))}
+        <nav className="header-nav">
+          <button className={page === "current" ? "nav-btn active" : "nav-btn"} onClick={() => setPage("current")}>
+            Current Session
+          </button>
+          <button className={page === "all" ? "nav-btn active" : "nav-btn"} onClick={() => setPage("all")}>
+            All Sessions
+          </button>
         </nav>
       </header>
 
-      {/* ══ BODY ══ */}
-      <main className="dashboard__body">
+      <div className="layout">
 
-        {/* ── KPI STRIP ── */}
-        <div className="kpi-grid">
-          {[
-            { label:"Overall Score",   value:`${overallAvg}%`,            colorHex: scoreHex(overallAvg),  sub:"Composite average" },
-            { label:"Total Attempts",  value:filtered.length,              colorHex:"var(--accent1)",        sub:`${SESSIONS.length} sessions` },
-            { label:"Top Performer",   value:sessionSummary[0]?.session,   colorHex:"var(--accent3)",        sub:`${sessionSummary[0]?.score}% avg` },
-            { label:"Weakest Metric",  value:METRIC_LABELS[weakestMetric], colorHex:"var(--accent2)",        sub:"Needs focus" },
-          ].map((k, i) => (
-            <div
-              key={i}
-              className={`card kpi-card hover-card ${animClass}`}
-              style={{ borderLeft:`3px solid ${k.colorHex}`, transitionDelay:`${i * 0.06}s` }}
+        {/* ── Sidebar ── */}
+        <aside className="sidebar">
+          <p className="sidebar-label">SESSIONS</p>
+          {sessions.map((s) => (
+            <button
+              key={s._id}
+              className={selectedSession._id === s._id ? "sess-card selected" : "sess-card"}
+              onClick={() => { setSelectedSession(s); setPage("current"); }}
             >
-              <p className="kpi-card__label">{k.label}</p>
-              <p className="kpi-card__value" style={{ color: k.colorHex }}>{k.value}</p>
-              <p className="kpi-card__sub">{k.sub}</p>
-            </div>
+              <div className="sess-tags">
+                <span className="tag blue">{s.domain}</span>
+                <span className="tag green">{s.difficultyTier}</span>
+                {s.status === "active" && <span className="live-dot" />}
+              </div>
+              <div className="sess-score" style={{ color: scoreColor(s.avgScore) }}>
+                {s.avgScore.toFixed(1)}
+              </div>
+              <div className="sess-date">{formatDate(s.createdAt)}</div>
+            </button>
           ))}
+        </aside>
+
+        {/* ── Page content ── */}
+        <main className="main">
+          {page === "current" ? (
+            <CurrentPage
+              session={selectedSession}
+              sessionAnswers={sessionAnswers}
+              avgScore={avgScore}
+              openAnswer={openAnswer}
+              setOpenAnswer={setOpenAnswer}
+            />
+          ) : (
+            <AllSessionsPage sessions={sessions} />
+          )}
+        </main>
+
+      </div>
+    </div>
+  );
+}
+
+// ── Current Session Page ──────────────────────────────────────────────────────
+
+function CurrentPage({ session, sessionAnswers, avgScore, openAnswer, setOpenAnswer }) {
+
+  const progressData = sessionAnswers.map((a, i) => ({
+    name: `Q${i + 1}`,
+    score: parseFloat(a.overallScore.toFixed(1)),
+  }));
+
+  const radarData = sessionAnswers.length ? [
+    { skill: "Accuracy",        value: average(sessionAnswers, "accuracy") },
+    { skill: "Depth",           value: average(sessionAnswers, "depth") },
+    { skill: "Clarity",         value: average(sessionAnswers, "clarity") },
+    { skill: "Problem Solving", value: average(sessionAnswers, "problemSolving") },
+    { skill: "Examples",        value: average(sessionAnswers, "exampleUsage") },
+    { skill: "Comm. Structure", value: average(sessionAnswers, "communicationStructure") },
+    { skill: "Grammar",         value: average(sessionAnswers, "grammar") },
+  ] : [];
+
+  const bestScore = sessionAnswers.length ? Math.max(...sessionAnswers.map((a) => a.overallScore)) : 0;
+
+  return (
+    <div className="page">
+      <h1 className="page-title">
+        {session.domain} · {session.difficultyTier}
+        {session.status === "active" && <span className="live-badge">● LIVE</span>}
+      </h1>
+
+      {/* Stat cards */}
+      <div className="card-grid">
+        <div className="stat-card">
+          <div className="stat-value" style={{ color: scoreColor(avgScore) }}>{avgScore.toFixed(1)}</div>
+          <div className="stat-label">Avg Score</div>
+        </div>
+        <div className="stat-card">
+          <div className="stat-value" style={{ color: scoreColor(bestScore) }}>{bestScore.toFixed(1)}</div>
+          <div className="stat-label">Best Score</div>
+        </div>
+        <div className="stat-card">
+          <div className="stat-value purple">{sessionAnswers.length}</div>
+          <div className="stat-label">Questions</div>
+        </div>
+        <div className="stat-card">
+          <div className="stat-value blue">{formatDate(session.createdAt)}</div>
+          <div className="stat-label">Date</div>
+        </div>
+      </div>
+
+      {/* Charts */}
+      <div className="chart-row">
+        <div className="card">
+          <p className="card-label">Score Over Time</p>
+          {progressData.length > 0 ? (
+            <ResponsiveContainer width="100%" height={180}>
+              <LineChart data={progressData}>
+                <XAxis dataKey="name" tick={{ fill: "#64748b", fontSize: 12 }} axisLine={false} tickLine={false} />
+                <YAxis domain={[0, 10]} tick={{ fill: "#64748b", fontSize: 12 }} axisLine={false} tickLine={false} />
+                <Tooltip contentStyle={{ background: "rgba(15,23,42,0.95)", border: "1px solid rgba(255,255,255,0.05)", borderRadius: 8 }} itemStyle={{ color: CHART_LINE }} />
+                <Line type="monotone" dataKey="score" stroke={CHART_LINE} strokeWidth={2.5} dot={{ fill: CHART_LINE, r: 4 }} />
+              </LineChart>
+            </ResponsiveContainer>
+          ) : <p className="empty-msg">Answer questions to see your progress</p>}
         </div>
 
-        {/* ════════ OVERVIEW TAB ════════ */}
-        {activeTab === "overview" && (
-          <div>
-            <div className="two-col">
+        <div className="card">
+          <p className="card-label">Skills Radar</p>
+          {radarData.length > 0 ? (
+            <ResponsiveContainer width="100%" height={180}>
+              <RadarChart data={radarData}>
+                <PolarGrid stroke="#1e293b" />
+                <PolarAngleAxis dataKey="skill" tick={{ fill: "#64748b", fontSize: 10 }} />
+                <Radar dataKey="value" stroke={CHART_RADAR} fill={CHART_RADAR} fillOpacity={0.2} strokeWidth={2} />
+              </RadarChart>
+            </ResponsiveContainer>
+          ) : <p className="empty-msg">No data yet</p>}
+        </div>
+      </div>
 
-              {/* Metric Breakdown */}
-              <div className={`card card--padded ${animClass}`} style={{ transitionDelay:".15s" }}>
-                <p className="section-title">Metric Breakdown</p>
-                {METRICS.map(m => {
-                  const val = avg(filtered.map(d => d[m]));
-                  return (
-                    <div key={m} className="metric-row">
-                      <div className="metric-row__header">
-                        <span className="metric-row__label">{METRIC_LABELS[m]}</span>
-                        <span className={`metric-row__value ${scoreClass(val)}`}>{val}%</span>
-                      </div>
-                      <div className="metric-bar">
-                        <div
-                          className="metric-bar__fill"
-                          style={{ width:`${val}%`, background:`linear-gradient(90deg, ${scoreHex(val)}88, ${scoreHex(val)})` }}
-                        />
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
+      {/* Answer log */}
+      <div className="card">
+        <p className="card-label">Answer Log</p>
+        {sessionAnswers.length === 0 ? (
+          <p className="empty-msg">No answers yet in this session</p>
+        ) : (
+          sessionAnswers.map((a, i) => (
+            <div key={a._id} className="answer-item">
+              <button className="answer-header" onClick={() => setOpenAnswer(openAnswer === a._id ? null : a._id)}>
+                <span className="q-num">Q{i + 1}</span>
+                <span className="q-text">{a.attemtedquestion}</span>
+                <span className="q-score" style={{ color: scoreColor(a.overallScore) }}>{a.overallScore.toFixed(1)}</span>
+                <span className="chevron">{openAnswer === a._id ? "▲" : "▼"}</span>
+              </button>
+              {openAnswer === a._id && (
+                <div className="answer-body">
+                  <p className="answer-body-label">Your Answer</p>
+                  <p className="user-answer-text">{a.userAnswer}</p>
 
-              {/* Session Scorecard */}
-              <div className={`card card--padded ${animClass}`} style={{ transitionDelay:".2s" }}>
-                <p className="section-title">Session Scorecard</p>
-                {SESSIONS.map((s, i) => {
-                  const sd  = raw.filter(d => d.sessionId === s);
-                  const sc  = avg(sd.map(d => d.overallScore || avg(METRICS.map(m => d[m]))));
-                  const col = SESSION_COLORS[i];
-                  return (
-                    <div key={s} className="session-row">
-                      <div
-                        className="session-row__avatar"
-                        style={{ background:`${col}22`, borderColor: col, color: col }}
-                      >
-                        {s.slice(-1)}
-                      </div>
-                      <div className="session-row__info">
-                        <div className="session-row__name-row">
-                          <span>{s}</span>
-                          <span style={{ color: scoreHex(sc) }}>{sc}%</span>
-                        </div>
-                        <div className="metric-bar">
-                          <div className="metric-bar__fill" style={{ width:`${sc}%`, background: col }} />
-                        </div>
-                      </div>
-                      <span className="session-row__attempts">{sd.length} attempts</span>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* Bar Chart */}
-            <div className={`card chart-wrap ${animClass}`} style={{ transitionDelay:".25s" }}>
-              <p className="section-title section-title--lg">Score by Question &amp; Session</p>
-              <ResponsiveContainer width="100%" height={260}>
-                <BarChart data={barData} barCategoryGap="30%">
-                  <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
-                  <XAxis dataKey="question" tick={{ fill:"var(--muted)", fontSize:11, fontFamily:"Space Mono" }} axisLine={false} tickLine={false} />
-                  <YAxis domain={[0,100]}   tick={{ fill:"var(--muted)", fontSize:11, fontFamily:"Space Mono" }} axisLine={false} tickLine={false} />
-                  <Tooltip content={<CustomTooltip />} />
-                  <Legend wrapperStyle={{ fontSize:11, fontFamily:"Space Mono", paddingTop:16 }} />
-                  {SESSIONS.map((s, i) => (
-                    <Bar key={s} dataKey={s} fill={SESSION_COLORS[i]} radius={[4,4,0,0]} />
-                  ))}
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-          </div>
-        )}
-
-        {/* ════════ RADAR TAB ════════ */}
-        {activeTab === "radar" && (
-          <div className="two-col">
-            <div className={`card card--padded ${animClass}`}>
-              <p className="section-title section-title--lg">Skill Radar — Aggregated</p>
-              <ResponsiveContainer width="100%" height={340}>
-                <RadarChart data={radarData}>
-                  <PolarGrid stroke="var(--border)" />
-                  <PolarAngleAxis dataKey="subject" tick={{ fill:"var(--muted)", fontSize:10, fontFamily:"Space Mono" }} />
-                  <PolarRadiusAxis domain={[0,100]} tick={{ fill:"var(--muted)", fontSize:9 }} axisLine={false} />
-                  <Radar name="Score" dataKey="value" stroke="var(--accent1)" fill="var(--accent1)" fillOpacity={0.25} />
-                  <Tooltip content={<CustomTooltip />} />
-                </RadarChart>
-              </ResponsiveContainer>
-            </div>
-
-            <div className={`card card--padded ${animClass}`} style={{ transitionDelay:".1s" }}>
-              <p className="section-title section-title--lg">Multi-Session Radar Overlay</p>
-              <ResponsiveContainer width="100%" height={340}>
-                <RadarChart
-                  data={METRICS.map(m => ({
-                    subject: METRIC_LABELS[m],
-                    ...Object.fromEntries(
-                      SESSIONS.map(s => [s, avg(raw.filter(d => d.sessionId === s).map(d => d[m]))])
-                    ),
-                  }))}
-                >
-                  <PolarGrid stroke="var(--border)" />
-                  <PolarAngleAxis dataKey="subject" tick={{ fill:"var(--muted)", fontSize:10, fontFamily:"Space Mono" }} />
-                  <PolarRadiusAxis domain={[0,100]} tick={{ fill:"var(--muted)", fontSize:9 }} axisLine={false} />
-                  {SESSIONS.map((s, i) => (
-                    <Radar key={s} name={s} dataKey={s} stroke={SESSION_COLORS[i]} fill={SESSION_COLORS[i]} fillOpacity={0.15} />
-                  ))}
-                  <Legend wrapperStyle={{ fontSize:11, fontFamily:"Space Mono" }} />
-                  <Tooltip content={<CustomTooltip />} />
-                </RadarChart>
-              </ResponsiveContainer>
-            </div>
-          </div>
-        )}
-
-        {/* ════════ COMPARISON TAB ════════ */}
-        {activeTab === "comparison" && (
-          <div>
-            <div className={`card chart-wrap ${animClass}`}>
-              <p className="section-title section-title--lg">Metric-by-Metric Session Comparison</p>
-              <ResponsiveContainer width="100%" height={300}>
-                <LineChart data={lineData}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
-                  <XAxis dataKey="metric" tick={{ fill:"var(--muted)", fontSize:10, fontFamily:"Space Mono" }} axisLine={false} tickLine={false} />
-                  <YAxis domain={[0,100]}  tick={{ fill:"var(--muted)", fontSize:10, fontFamily:"Space Mono" }} axisLine={false} tickLine={false} />
-                  <Tooltip content={<CustomTooltip />} />
-                  <Legend wrapperStyle={{ fontSize:11, fontFamily:"Space Mono", paddingTop:16 }} />
-                  {SESSIONS.map((s, i) => (
-                    <Line key={s} type="monotone" dataKey={s} stroke={SESSION_COLORS[i]} strokeWidth={2} dot={{ r:4, fill:SESSION_COLORS[i] }} />
-                  ))}
-                </LineChart>
-              </ResponsiveContainer>
-            </div>
-
-            <div className="three-col">
-              {SESSIONS.map((s, si) => {
-                const sd  = raw.filter(d => d.sessionId === s);
-                const sc  = avg(sd.map(d => d.overallScore || avg(METRICS.map(m => d[m]))));
-                const col = SESSION_COLORS[si];
-                return (
-                  <div
-                    key={s}
-                    className={`card card--padded-sm hover-card ${animClass}`}
-                    style={{ borderTop:`3px solid ${col}`, transitionDelay:`${si * 0.08}s` }}
-                  >
-                    <div className="session-card__header">
-                      <span className="session-card__session-name" style={{ color: col }}>{s}</span>
-                      <span className={`session-card__score ${scoreClass(sc)}`}>{sc}%</span>
-                    </div>
-                    {METRICS.map(m => {
-                      const v = avg(sd.map(d => d[m]));
-                      return (
-                        <div key={m} className="session-card__metric-row">
-                          <span>{METRIC_LABELS[m]}</span>
-                          <span style={{ color: scoreHex(v) }}>{v}</span>
-                        </div>
-                      );
-                    })}
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        )}
-
-        {/* ════════ DETAILS TAB ════════ */}
-        {activeTab === "details" && (
-          <div className={`details-grid ${animClass}`}>
-            {filtered.map((d, i) => {
-              const score = d.overallScore || avg(METRICS.map(m => d[m]));
-              const si    = SESSIONS.indexOf(d.sessionId);
-              const col   = SESSION_COLORS[si];
-              return (
-                <div
-                  key={i}
-                  className="card detail-card hover-card"
-                  style={{ borderLeft:`3px solid ${col}` }}
-                >
-                  <div className="detail-card__score-block">
-                    <div className={`detail-card__score-value ${scoreClass(score)}`}>{score}</div>
-                    <div className="detail-card__score-label">score</div>
-                  </div>
-
-                  <div>
-                    <div className="detail-card__tags">
-                      <span className="tag" style={{ background:`${col}22`, color: col }}>{d.sessionId}</span>
-                      <span className="tag tag--question">{d.questionId}</span>
-                    </div>
-                    <div className="detail-card__metrics">
-                      {METRICS.map(m => (
-                        <div key={m} className="detail-card__metric-chip">
-                          <span style={{ color: scoreHex(d[m]) }}>{d[m]}</span>{" "}
-                          {METRIC_LABELS[m].split(" ")[0]}
-                        </div>
-                      ))}
-                    </div>
-                    {d.feedback && (
-                      <div className="detail-card__feedback">"{d.feedback}"</div>
-                    )}
-                  </div>
-
-                  <div className="detail-card__mini-grid">
-                    {METRICS.slice(0, 4).map(m => (
-                      <div key={m} className="mini-stat">
-                        <div className={`mini-stat__value ${scoreClass(d[m])}`}>{d[m]}</div>
-                        <div className="mini-stat__label">{METRIC_LABELS[m].slice(0,4).toUpperCase()}</div>
+                  <p className="answer-body-label" style={{ marginTop: 16 }}>Score Breakdown</p>
+                  <div className="metrics-row">
+                    {[
+                      ["Accuracy",       a.accuracy],
+                      ["Depth",          a.depth],
+                      ["Clarity",        a.clarity],
+                      ["Prob. Solving",  a.problemSolving],
+                      ["Examples",       a.exampleUsage],
+                      ["Comm. Structure",a.communicationStructure],
+                      ["Grammar",        a.grammar],
+                    ].map(([label, val]) => (
+                      <div key={label} className="metric-chip">
+                        <span className="chip-label">{label}</span>
+                        <span className="chip-value" style={{ color: scoreColor(val) }}>{val}</span>
                       </div>
                     ))}
                   </div>
+
+                  <p className="answer-meta">Answered on {formatDate(a.createdAt)}</p>
+                  <p className="feedback"><strong>Feedback: </strong>{a.feedback}</p>
                 </div>
-              );
-            })}
-          </div>
+              )}
+            </div>
+          ))
         )}
-      </main>
+      </div>
+    </div>
+  );
+}
+
+// ── All Sessions Page ─────────────────────────────────────────────────────────
+
+function AllSessionsPage({ sessions }) {
+  const totalQs    = sessions.reduce((sum, s) => sum + s.totalQuestions, 0);
+  const overallAvg = sessions.reduce((sum, s) => sum + s.avgScore, 0) / sessions.length;
+  const best       = sessions.reduce((b, s) => (s.avgScore > b.avgScore ? s : b));
+
+  const historyData = sessions.map((s) => ({ name: formatDate(s.createdAt), score: parseFloat(s.avgScore.toFixed(2)) }));
+
+  return (
+    <div className="page">
+      <h1 className="page-title">All Sessions</h1>
+
+      <div className="card-grid">
+        <div className="stat-card">
+          <div className="stat-value" style={{ color: scoreColor(overallAvg) }}>{overallAvg.toFixed(1)}</div>
+          <div className="stat-label">Overall Avg</div>
+        </div>
+        <div className="stat-card">
+          <div className="stat-value purple">{sessions.length}</div>
+          <div className="stat-label">Sessions</div>
+        </div>
+        <div className="stat-card">
+          <div className="stat-value blue">{totalQs}</div>
+          <div className="stat-label">Total Questions</div>
+        </div>
+        <div className="stat-card">
+          <div className="stat-value" style={{ color: scoreColor(best.avgScore) }}>{best.avgScore.toFixed(1)}</div>
+          <div className="stat-label">Best Session</div>
+        </div>
+      </div>
+
+      <div className="card">
+        <p className="card-label">Score History</p>
+        <ResponsiveContainer width="100%" height={200}>
+          <LineChart data={historyData}>
+            <XAxis dataKey="name" tick={{ fill: "#64748b", fontSize: 11 }} axisLine={false} tickLine={false} />
+            <YAxis domain={[0, 10]} tick={{ fill: "#64748b", fontSize: 11 }} axisLine={false} tickLine={false} />
+            <Tooltip contentStyle={{ background: "rgba(15,23,42,0.95)", border: "1px solid rgba(255,255,255,0.05)", borderRadius: 8 }} itemStyle={{ color: CHART_LINE }} />
+            <Line type="monotone" dataKey="score" stroke={CHART_LINE} strokeWidth={2.5} dot={{ fill: CHART_LINE, r: 5 }} />
+          </LineChart>
+        </ResponsiveContainer>
+      </div>
+
+      <div className="card">
+        <p className="card-label">Session Log</p>
+        <table className="table">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Domain</th>
+              <th>Tier</th>
+              <th>Questions</th>
+              <th>Avg Score</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {sessions.map((s) => (
+              <tr key={s._id}>
+                <td>{formatDate(s.createdAt)}</td>
+                <td><span className="tag blue">{s.domain}</span></td>
+                <td><span className="tag green">{s.difficultyTier}</span></td>
+                <td>{s.totalQuestions}</td>
+                <td style={{ color: scoreColor(s.avgScore), fontWeight: 600 }}>{s.avgScore.toFixed(1)}</td>
+                <td>
+                  <span className={s.status === "active" ? "status-active" : "status-done"}>
+                    {s.status}
+                  </span>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }

@@ -2,6 +2,7 @@ import express from "express";
 
 import {createSession,getSessionById,endSession,getUserSessions} from "../controllers/SessionController.js"
 
+
 import { verifyAccessToken } from "../middleware/authMiddleware.js";
 
 const SessionRouter = express.Router();
