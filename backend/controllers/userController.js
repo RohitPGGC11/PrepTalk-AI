@@ -1,6 +1,7 @@
 // controllers/userController.js
 import Question from "../models/Question.js";
 import Session from "../models/SessionModel.js"
+import Answer from "../models/AnswerAttemptModel.js";
 
 export const fetchQuestion = async (req, res) => {
   try {
@@ -51,4 +52,37 @@ export const fetchQuestion = async (req, res) => {
       message: error.message
     });
   }
+};
+
+export const getAnswerBySessions = async (req,res)=>{
+    try {
+     const {sessionIds} = req.body;
+    
+     if(!sessionIds || sessionIds.lenght === 0){
+      return res.status(400).json({
+        success:false,
+        message:"sessionIds are required"
+      })
+     }
+     
+     const answers = await Answer.find({
+      sessionId: {$in: sessionIds},
+     }).sort({createdAt:1})
+
+     res.status(200).json({
+      success:true,
+      count:answers.length,
+      answers
+
+     })
+
+    } catch (error) {
+      console.log("fetch answer error",error);
+
+      res.status(500).json({
+        success:false,
+        message:"server error while fetching the data"
+      });
+      
+    }
 };

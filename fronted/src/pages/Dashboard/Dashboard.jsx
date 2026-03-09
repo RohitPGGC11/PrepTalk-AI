@@ -1,29 +1,36 @@
-import { useState } from "react";
 import "./Dashboard.css";
 import {
   LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer,
   RadarChart, Radar, PolarGrid, PolarAngleAxis,
 } from "recharts";
+import { useEffect,useState  } from "react";
+import api from "../../utils/api";
 
 // ── Mock Data — replace with your real API fetch ──────────────────────────────
+
 // Session shape matches your DB exactly
 
-const sessions = [
-  { _id: "69a284be0a3c5ed3a8031c07", userId: "69a01b9435ee66c8d714fdc3", domain: "frontend", difficultyTier: "beginner",     status: "active",    totalQuestions: 4, avgScore: 1.96, createdAt: "2026-02-28T06:01:34.022Z", updatedAt: "2026-03-01T06:11:13.197Z" },
-  { _id: "69a284be0a3c5ed3a8031c08", userId: "69a01b9435ee66c8d714fdc3", domain: "frontend", difficultyTier: "intermediate", status: "completed", totalQuestions: 8, avgScore: 6.8,  createdAt: "2026-02-27T09:10:00.000Z", updatedAt: "2026-02-27T11:00:00.000Z" },
-  { _id: "69a284be0a3c5ed3a8031c09", userId: "69a01b9435ee66c8d714fdc3", domain: "backend",  difficultyTier: "beginner",     status: "completed", totalQuestions: 6, avgScore: 8.1,  createdAt: "2026-02-24T14:30:00.000Z", updatedAt: "2026-02-24T16:00:00.000Z" },
-  { _id: "69a284be0a3c5ed3a8031c10", userId: "69a01b9435ee66c8d714fdc3", domain: "dsa",      difficultyTier: "intermediate", status: "completed", totalQuestions: 7, avgScore: 5.9,  createdAt: "2026-02-20T11:00:00.000Z", updatedAt: "2026-02-20T12:30:00.000Z" },
-];
+// const sessions = [
+//   { _id: "69a284be0a3c5ed3a8031c07", userId: "69a01b9435ee66c8d714fdc3", domain: "frontend", difficultyTier: "beginner",     status: "active",    totalQuestions: 4, avgScore: 1.96, createdAt: "2026-02-28T06:01:34.022Z", updatedAt: "2026-03-01T06:11:13.197Z" },
+//   { _id: "69a284be0a3c5ed3a8031c08", userId: "69a01b9435ee66c8d714fdc3", domain: "frontend", difficultyTier: "intermediate", status: "completed", totalQuestions: 8, avgScore: 6.8,  createdAt: "2026-02-27T09:10:00.000Z", updatedAt: "2026-02-27T11:00:00.000Z" },
+//   { _id: "69a284be0a3c5ed3a8031c09", userId: "69a01b9435ee66c8d714fdc3", domain: "backend",  difficultyTier: "beginner",     status: "completed", totalQuestions: 6, avgScore: 8.1,  createdAt: "2026-02-24T14:30:00.000Z", updatedAt: "2026-02-24T16:00:00.000Z" },
+//   { _id: "69a284be0a3c5ed3a8031c10", userId: "69a01b9435ee66c8d714fdc3", domain: "dsa",      difficultyTier: "intermediate", status: "completed", totalQuestions: 7, avgScore: 5.9,  createdAt: "2026-02-20T11:00:00.000Z", updatedAt: "2026-02-20T12:30:00.000Z" },
+// ];
 
-// Answer shape matches your DB exactly (includes communicationStructure)
-const answers = [
-  { _id: "69a3dd1e085e9b8f5ba9bb79", sessionId: "69a284be0a3c5ed3a8031c07", questionId: "69a3db8b085e9b8f5ba9bb68", attemtedquestion: "What is HTML and why is it used?",      userAnswer: "HTML (HyperText Markup Language) is the standard language used to create web pages.\nIt structures content using elements like headings, paragraphs, links, and images.\nIt is used to define the layout and structure of content displayed in a web browser.", accuracy: 9, depth: 8, clarity: 8, problemSolving: 6, exampleUsage: 5, communicationStructure: 7, grammar: 9, overallScore: 7.428571428571429, feedback: "Your answer is mostly accurate and well-structured. You could improve by providing more specific examples of how HTML elements are used to define layout and structure.", createdAt: "2026-03-01T06:30:54.846Z" },
-  { _id: "69a3dd1e085e9b8f5ba9bb80", sessionId: "69a284be0a3c5ed3a8031c07", questionId: "69a3db8b085e9b8f5ba9bb69", attemtedquestion: "What is CSS specificity?",              userAnswer: "CSS specificity determines which styles are applied when multiple rules target the same element. It is calculated based on the type of selectors — IDs have the highest weight, followed by classes, then element selectors.", accuracy: 7, depth: 6, clarity: 8, problemSolving: 5, exampleUsage: 7, communicationStructure: 6, grammar: 9, overallScore: 6.857142857142857, feedback: "Solid understanding shown. Add more depth on how specificity is actually calculated with numbers." },
-  { _id: "69a3dd1e085e9b8f5ba9bb81", sessionId: "69a284be0a3c5ed3a8031c07", questionId: "69a3db8b085e9b8f5ba9bb70", attemtedquestion: "Explain the CSS Box Model",             userAnswer: "The CSS box model wraps every HTML element in a box made of content, padding, border, and margin.\nContent is the actual text or image.\nPadding is space inside the border.\nBorder surrounds the padding.\nMargin is the space outside the border.", accuracy: 10, depth: 9, clarity: 9, problemSolving: 7, exampleUsage: 8, communicationStructure: 9, grammar: 10, overallScore: 8.857142857142858, feedback: "Excellent response! Clear structure, accurate content, and great use of examples." },
-  { _id: "69a3dd1e085e9b8f5ba9bb82", sessionId: "69a284be0a3c5ed3a8031c07", questionId: "69a3db8b085e9b8f5ba9bb71", attemtedquestion: "Difference between let, var, const?",   userAnswer: "var is function-scoped and can be re-declared. let is block-scoped and can be reassigned but not re-declared. const is block-scoped and cannot be reassigned after declaration. let and const were introduced in ES6.", accuracy: 9, depth: 8, clarity: 9, problemSolving: 8, exampleUsage: 9, communicationStructure: 8, grammar: 9, overallScore: 8.571428571428571, feedback: "Great answer with relevant examples and clear distinctions between all three." },
-];
+// // Answer shape matches your DB exactly (includes communicationStructure)
+// const answers = [
+//   { _id: "69a3dd1e085e9b8f5ba9bb79", sessionId: "69a284be0a3c5ed3a8031c07", questionId: "69a3db8b085e9b8f5ba9bb68", attemtedquestion: "What is HTML and why is it used?",      userAnswer: "HTML (HyperText Markup Language) is the standard language used to create web pages.\nIt structures content using elements like headings, paragraphs, links, and images.\nIt is used to define the layout and structure of content displayed in a web browser.", accuracy: 9, depth: 8, clarity: 8, problemSolving: 6, exampleUsage: 5, communicationStructure: 7, grammar: 9, overallScore: 7.428571428571429, feedback: "Your answer is mostly accurate and well-structured. You could improve by providing more specific examples of how HTML elements are used to define layout and structure.", createdAt: "2026-03-01T06:30:54.846Z" },
+//   { _id: "69a3dd1e085e9b8f5ba9bb80", sessionId: "69a284be0a3c5ed3a8031c07", questionId: "69a3db8b085e9b8f5ba9bb69", attemtedquestion: "What is CSS specificity?",              userAnswer: "CSS specificity determines which styles are applied when multiple rules target the same element. It is calculated based on the type of selectors — IDs have the highest weight, followed by classes, then element selectors.", accuracy: 7, depth: 6, clarity: 8, problemSolving: 5, exampleUsage: 7, communicationStructure: 6, grammar: 9, overallScore: 6.857142857142857, feedback: "Solid understanding shown. Add more depth on how specificity is actually calculated with numbers." },
+//   { _id: "69a3dd1e085e9b8f5ba9bb81", sessionId: "69a284be0a3c5ed3a8031c07", questionId: "69a3db8b085e9b8f5ba9bb70", attemtedquestion: "Explain the CSS Box Model",             userAnswer: "The CSS box model wraps every HTML element in a box made of content, padding, border, and margin.\nContent is the actual text or image.\nPadding is space inside the border.\nBorder surrounds the padding.\nMargin is the space outside the border.", accuracy: 10, depth: 9, clarity: 9, problemSolving: 7, exampleUsage: 8, communicationStructure: 9, grammar: 10, overallScore: 8.857142857142858, feedback: "Excellent response! Clear structure, accurate content, and great use of examples." },
+//   { _id: "69a3dd1e085e9b8f5ba9bb82", sessionId: "69a284be0a3c5ed3a8031c07", questionId: "69a3db8b085e9b8f5ba9bb71", attemtedquestion: "Difference between let, var, const?",   userAnswer: "var is function-scoped and can be re-declared. let is block-scoped and can be reassigned but not re-declared. const is block-scoped and cannot be reassigned after declaration. let and const were introduced in ES6.", accuracy: 9, depth: 8, clarity: 9, problemSolving: 8, exampleUsage: 9, communicationStructure: 8, grammar: 9, overallScore: 8.571428571428571, feedback: "Great answer with relevant examples and clear distinctions between all three." },
+// ];
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
+
+
+
+
+
 
 function scoreColor(score) {
   if (score >= 8) return "#4ade80";
@@ -45,14 +52,62 @@ function average(arr, key) {
 // ── Main Component ────────────────────────────────────────────────────────────
 
 export default function Dashboard() {
-  const [page, setPage] = useState("current");
-  const [selectedSession, setSelectedSession] = useState(sessions[0]);
-  const [openAnswer, setOpenAnswer] = useState(null);
 
-  const sessionAnswers = answers.filter((a) => a.sessionId === selectedSession._id);
+  const [sessions, setsessions] = useState([])
+  const [answers, setanswers] = useState([])
+  const [loading, setloading] = useState(true)
+
+  useEffect(() => {
+    const fetchdata = async () =>{
+        try {
+          const response = await api.get("/api/session/my-sessions");
+          if(response.data.success){
+            const sess= response.data.data
+            setsessions(sess);
+
+            const sessionIds = sess.map((a)=>a._id)
+
+            const answerRes = await api.post("/api/user/answerBy-Id",{
+              sessionIds
+            })
+            if(answerRes.data.success){
+              setanswers(answerRes.data.answers)
+            }
+          }
+        } catch (error) {
+            console.log("dashboard fetch error",error);
+            
+        }finally{
+          setloading(false);
+        }
+    }
+    fetchdata();
+  }, [])
+  
+
+
+  const [page, setPage] = useState("current");
+  const [selectedSession, setSelectedSession] = useState(null);
+  useEffect(()=>{
+    if(sessions.length && !selectedSession){
+      setSelectedSession(sessions[0]);
+    }
+  },[sessions])
+
+
+  const [openAnswer, setOpenAnswer] = useState(null);
+  const sessionAnswers = selectedSession ? answers.filter((a)=>a.sessionId === selectedSession._id) :[];
+
   const avgScore = sessionAnswers.length
     ? sessionAnswers.reduce((sum, a) => sum + a.overallScore, 0) / sessionAnswers.length
     : 0;
+
+  if(loading){
+    return <div className="loading">Loading dashboard...</div>
+  }
+    if(!loading && sessions.length === 0){
+    return <div className="empty-msg">No sessions yet</div>
+  }
 
   return (
     <div className="app">
@@ -81,7 +136,7 @@ export default function Dashboard() {
           {sessions.map((s) => (
             <button
               key={s._id}
-              className={selectedSession._id === s._id ? "sess-card selected" : "sess-card"}
+              className={selectedSession && selectedSession._id === s._id ? "sess-card selected" : "sess-card"}
               onClick={() => { setSelectedSession(s); setPage("current"); }}
             >
               <div className="sess-tags">
@@ -99,7 +154,7 @@ export default function Dashboard() {
 
         {/* ── Page content ── */}
         <main className="main">
-          {page === "current" ? (
+          {page === "current" && selectedSession ? (
             <CurrentPage
               session={selectedSession}
               sessionAnswers={sessionAnswers}
@@ -249,7 +304,7 @@ function CurrentPage({ session, sessionAnswers, avgScore, openAnswer, setOpenAns
 function AllSessionsPage({ sessions }) {
   const totalQs    = sessions.reduce((sum, s) => sum + s.totalQuestions, 0);
   const overallAvg = sessions.reduce((sum, s) => sum + s.avgScore, 0) / sessions.length;
-  const best       = sessions.reduce((b, s) => (s.avgScore > b.avgScore ? s : b));
+  const best       = sessions.length ?  sessions.reduce((b, s) => (s.avgScore > b.avgScore ? s : b)):{avgScore:0};
 
   const historyData = sessions.map((s) => ({ name: formatDate(s.createdAt), score: parseFloat(s.avgScore.toFixed(2)) }));
 

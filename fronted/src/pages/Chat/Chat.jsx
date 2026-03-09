@@ -1,10 +1,13 @@
-import { useState, useRef, useEffect,useContext } from "react";
-
+import { useState, useRef, useEffect } from "react";
 import { useParams } from "react-router-dom";
-
 import api from "../../utils/api.js";
 import "./Chat.css";
 import { createSpeechRecognition } from "../../utils/speechRecognition.js";
+import { FaMicrophone } from "react-icons/fa";
+import {useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+
+
 
 
 function SpeechToText() {
@@ -20,11 +23,29 @@ function SpeechToText() {
   const {sessionId} = useParams()
   
   const recognitionRef = useRef(null);
+  const [listening, setlistening] = useState(false);
 
+  const navigate = useNavigate();
  
   useEffect(() => {
     fetchQuestion();
   }, [currentOrder]);
+
+  
+     const EndSession = async () =>{
+    try {
+      const response = await api.put(`/api/session/${sessionId}/end`);
+            if(response.data.success){
+              toast.success(response.data.message);
+              navigate("/dashboard")
+            }else{
+              toast.error(response.data.message);
+            }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
 
   const fetchQuestion = async () => {
     try {
@@ -38,6 +59,12 @@ function SpeechToText() {
       if (response.data.success) {
 
         const questionData =response.data.data;
+        if (!questionData || !questionData.question) {
+              toast.info("Interview completed");
+              EndSession();
+              return;
+            }
+
         const newQuestion=questionData.question;
         
         const newQuestionId=questionData.questionId;
@@ -59,6 +86,8 @@ function SpeechToText() {
     }
   };
 
+
+
   //  Start Listening
   const startListening = () => {
     const recognition = createSpeechRecognition(
@@ -70,23 +99,33 @@ function SpeechToText() {
 
     recognition.start();
     recognitionRef.current = recognition;
+    setlistening(true);
   };
 
   // Stop Listening
   const stopListening = () => {
     if (recognitionRef.current) {
       recognitionRef.current.stop();
+      setlistening(false);
     }
   };
 
+  const toggleMic = () =>{
+    if(listening){
+      stopListening();
+    }else{
+      startListening();
+    }
+  }
+
   // Send text to backend
   const submitAnswer = async () => {
+    stopListening();
     if (!text.trim()) {
-      alert("Please speak something first!");
+      toast.warning("Please Speak Somthing First !")
       return;
 
     }
-
     try {
       setLoading(true);
       const response = await api.post("/api/ollama/chat", {
@@ -118,6 +157,8 @@ function SpeechToText() {
     }
   };
 
+
+
   //auto scroll
   const chatEndRef = useRef(null);
 
@@ -130,12 +171,13 @@ useEffect(() => {
       <h2 className="speech-title">🎤 Speech To Text</h2>
 
       <div className="question-answer-group">
-        <div className="chat-box" ref={chatEndRef}>
+        <div className="chat-box">
           {message.map((msg,index)=>(
             <div key={index} className={msg.sender ==="user" ? "chat-message user-message" : "chat-message ai-message"}>
               {msg.text}
             </div>
           ))}
+          <div ref={chatEndRef}></div>
         </div>
         <div className="output-box">
             <textarea
@@ -143,19 +185,33 @@ useEffect(() => {
               placeholder="Speak your answer or Type it here..."
               value={text}
               onChange={(e) => setText(e.target.value)}
+              onKeyDown={(e)=>{
+                if(e.key==="Enter" && !e.shiftKey){
+                  e.preventDefault();
+                  submitAnswer();
+                }
+              }}
             ></textarea>
         </div>
       </div>
 
       <div className="button-group">
-        <button className="btn start-btn" onClick={startListening}>
-            Start
+
+          <button className={`mic-btn ${listening ? "recording" : ""}`} onClick={toggleMic}>
+          <FaMicrophone/>
+          </button> 
+
+          <button className="btn response-btn" 
+          onClick={submitAnswer}
+          disabled={loading}
+          >
+              {loading ? "Thinking..." : "Get Response"}
           </button>
-        <button className="btn stop-btn" onClick={stopListening}>
-            Stop
-          </button>
-        <button className="btn response-btn" onClick={submitAnswer}>
-            {loading ? "Thinking..." : "Get Response"}
+          
+          <button className="btn dashboard-btn"
+          onClick={ EndSession }
+          >
+           Go to dashboard
           </button>
       </div>
        

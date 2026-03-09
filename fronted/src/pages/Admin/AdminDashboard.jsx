@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import  { useState } from "react";
 import Sidebar from "../../components/admin/Sidebar";
 import AllQuestions from "../../components/admin/AllQuestions";
 import AddQuestion from "../../components/admin/AddQuestion";

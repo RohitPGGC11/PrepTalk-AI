@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import "./EditQuestion.css";
 import { useNavigate } from "react-router-dom";
+import api from "../../utils/api.js";
 
 const EditQuestion = () => {
   const [questions, setQuestions] = useState([]);
@@ -15,7 +16,7 @@ const EditQuestion = () => {
   const fetchQuestions = async () => {
     try {
       setLoading(true);
-      const res = await axios.get("http://localhost:4000/api/admin/fetch-questions", {
+      const res = await api.get("/api/admin/fetch-questions", {
         params: { domain, difficultyTier },
       });
       setQuestions(res.data.data);

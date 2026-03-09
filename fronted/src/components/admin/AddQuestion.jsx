@@ -1,6 +1,7 @@
-import React, { useState } from "react";
-import axios from "axios";
+import  { useState } from "react";
 import "./AddQuestion.css";
+import api from "../../utils/api";
+import { toast } from "react-toastify";
 
 function AddQuestion() {
   const [formData, setFormData] = useState({
@@ -12,7 +13,6 @@ function AddQuestion() {
   });
 
   const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState("");
 
   const domains = ["frontend", "backend","full-stack","dsa","DevOps","ML/AI","mobile","system-design"];
   const difficulties = ["beginner", "intermediate", "advanced"];
@@ -36,9 +36,7 @@ function AddQuestion() {
 
     try {
       setLoading(true);
-      setMessage("");
-
-      const response = await axios.post("http://localhost:4000/api/admin/add-question",
+      const response = await api.post("/api/admin/add-question",
                         {
                           domain: formData.domain,
                           difficultyTier: formData.difficultyTier,
@@ -49,8 +47,7 @@ function AddQuestion() {
                             : []
                         }
       );
-
-      setMessage(response.data.message);
+      toast.success(response.data.message);
 
       setFormData({
         domain: "",
@@ -59,11 +56,9 @@ function AddQuestion() {
         question: "",
         expectedKeywords: ""
       });
-
+      
     } catch (error) {
-      setMessage(
-        error.response?.data?.message || "Something went wrong"
-      );
+       toast.error("somthing went wrong");
     } finally {
       setLoading(false);
     }
@@ -144,8 +139,6 @@ function AddQuestion() {
         </button>
 
       </form>
-
-      {message && <p className="form-message">{message}</p>}
     </div>
   );
 }

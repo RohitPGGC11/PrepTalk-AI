@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from "react";
-import axios from "axios";
+import { useEffect, useState } from "react";
 import "./AllQuestions.css";
 import {useNavigate} from"react-router-dom";
+import api from "../../utils/api";
+import { toast } from "react-toastify";
 
 const AllQuestions = () => {
   const [questions, setQuestions] = useState([]);
@@ -10,11 +11,11 @@ const AllQuestions = () => {
   const [loading, setLoading] = useState(false);
   const [removingId, setRemovingId] = useState(null);
 
-  const navigate = useNavigate
+  const navigate = useNavigate();
   const fetchQuestions = async () => {
     try {
       setLoading(true);
-      const res = await axios.get("http://localhost:4000/api/admin/fetch-questions", {
+      const res = await api.get("/api/admin/fetch-questions", {
         params: { domain, difficultyTier },
       });
       setQuestions(res.data.data);
@@ -28,8 +29,9 @@ const AllQuestions = () => {
   const removeQuestion = async (id) => {
     try {
       setRemovingId(id);
-      await axios.delete(`http://localhost:4000/api/admin/delete-question/${id}`);
+      await api.delete(`/api/admin/delete-question/${id}`);
       setQuestions((prev) => prev.filter((q) => q._id !== id));
+      toast.success("removed")
     } catch (error) {
       console.log(error);
     } finally {

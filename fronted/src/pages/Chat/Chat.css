@@ -67,6 +67,16 @@ body {
   z-index: 0;
 }
 
+.mic-btn.recording{
+  background: red;
+  animation: pulse 1s infinite;
+}
+
+@keyframes pulse{
+  0%{transform:scale(1)}
+  50%{transform:scale(1.2)}
+  100%{transform:scale(1)}
+}
 /* ─── Title / Header ────────────────────────────────────────── */
 .speech-title {
   position: relative;
@@ -279,6 +289,25 @@ body {
   background: rgba(239, 68, 68, 0.08);
   border-color: rgba(239, 68, 68, 0.3);
   color: #f87171;
+}
+
+.mic-btn{
+  font-size: 28px;
+  padding: 12px 18px;
+  border-radius: 50%;
+  background: #ff4d4d;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+.mic-btn:hover{
+  background: #ff0000;
+}
+
+.dashboard-btn{
+  background: #4CAF50;
+  color: white;
 }
 
 .stop-btn:hover {

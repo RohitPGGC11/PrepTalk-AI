@@ -13,9 +13,13 @@ import axios from "axios";
 import Dashboard from './pages/Dashboard/Dashboard'
 axios.defaults.withCredentials = true; 
 
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 const App = () => {
   return (
     <div>
+    <ToastContainer />  
     <Routes>
       {/* Home PAGE */}
       <Route path="/" element={<Home/>}></Route>

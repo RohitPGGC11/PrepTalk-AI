@@ -17,13 +17,13 @@ api.interceptors.request.use((config) => {
 });
 
 
-// ✅ 2. Handle expired token AFTER response
+//  Handle expired token AFTER response
 api.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
 
-    // ❗ Prevent infinite loop
+    // Prevent infinite loop
     if (
       error.response?.status === 401 &&
       !originalRequest._retry &&

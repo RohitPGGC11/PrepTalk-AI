@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from "react";
-import axios from "axios";
+import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import "./AddQuestion.css";
+import api from "../../utils/api";
+import { toast } from "react-toastify";
 
 function EditForm() {
   const { id } = useParams();
@@ -21,8 +22,8 @@ function EditForm() {
   useEffect(() => {
     const fetchQuestion = async () => {
       try {
-        const res = await axios.get(
-          `http://localhost:4000/api/admin/fetch-one/${id}`
+        const res = await api.get(
+          `/api/admin/fetch-one/${id}`
         );
 
         const q = res.data.data;
@@ -56,8 +57,8 @@ function EditForm() {
     try {
       setLoading(true);
 
-      await axios.put(
-        `http://localhost:4000/api/admin/edit-question/${id}`,
+      await api.put(
+        `/api/admin/edit-question/${id}`,
         {
           ...formData,
           order: Number(formData.order),
@@ -68,6 +69,7 @@ function EditForm() {
       );
 
       navigate("/admin"); // redirect after update
+      toast.success(" Update successfull");
 
     } catch (error) {
       console.log(error);
