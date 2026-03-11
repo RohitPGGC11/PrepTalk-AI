@@ -18,6 +18,12 @@ api.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
+    const token = localStorage.getItem("token");
+    // If user never logged in → don't try refresh
+    if (!token) {
+      return Promise.reject(error);
+    }
+
     if (
       error.response?.status === 401 &&
       !originalRequest._retry &&

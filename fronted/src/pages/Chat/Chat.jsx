@@ -168,7 +168,7 @@ useEffect(() => {
 
   return (
     <div className="speech-container">
-      <h2 className="speech-title">🎤 Speech To Text</h2>
+      <h2 className="speech-title">AI Interview Assistant</h2>
 
       <div className="question-answer-group">
         <div className="chat-box">

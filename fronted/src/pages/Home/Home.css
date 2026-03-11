@@ -99,6 +99,19 @@ body {
   text-transform: uppercase;
   transition: color 0.2s;
 }
+.isAdmin{
+  color: rgba(232, 237, 245, 0.6);
+  text-decoration: none;
+  font-size: 0.88rem;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  transition: color 0.2s;
+  cursor: pointer;
+}
+.isAdmin:hover{
+  color: var(--text);
+}
 
 .nav-links a:hover {
   color: var(--text);

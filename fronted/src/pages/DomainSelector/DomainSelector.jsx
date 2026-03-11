@@ -39,9 +39,7 @@ const createSession = async()=>{
       if(response.data.success){
       const sessionId = response.data.sessionId;
       navigate(`/chat/${sessionId}`);
-      }else{
-          console.log(response.data.message);
-        }
+      }
   } catch (error) {
     console.log(error);
     
@@ -124,7 +122,7 @@ const createSession = async()=>{
               You're set to explore <strong style={{ color: domainObj.color }}>{domainObj.label}</strong> at{" "}
               <strong style={{ color: tierObj.accent }}>{tierObj.label}</strong> level. Let's go!
             </p>
-            <button className="ds-start-btn"  onClick={createSession}>🚀 Start Interview</button>
+            <button className="ds-start-btn"  onClick={createSession}> Start Interview</button>
             <button className="ds-reset-btn" onClick={reset}>← Change selection</button>
           </div>
         )}

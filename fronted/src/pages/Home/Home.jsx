@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useContext } from "react";
 import { userContext } from "../../contexts/userContext";
 import api from "../../utils/api";
+import {jwtDecode} from "jwt-decode";
 
 /* ── data ── */
 const domains = [
@@ -56,6 +57,19 @@ const resumeFeatures = [
 const Home = () => {
   const navigate = useNavigate();
   const { Token, setToken } = useContext(userContext);
+  let isAdmin =false;
+  if(Token){
+    try {
+      const decoded = jwtDecode(Token);
+      if(decoded.email === "roy3936f@gmail.com"){
+        isAdmin=true;
+      }
+    } catch (error) {
+        console.log("Invalid token")
+    }
+  }
+
+
 
   const handleLogout = async () => {
     try {
@@ -81,7 +95,8 @@ const Home = () => {
           <li><a href="#about">About</a></li>
           <li><a href="#domains">Domains</a></li>
           <li><a href="#features">Features</a></li>
-          <li><a href="#resume">Resume</a></li>
+          <li><a href="#resume">Upcoming</a></li>
+          {isAdmin && (<li onClick={()=>navigate("/admin")} className="isAdmin">Admin Pannel</li>)}
         </ul>
 
         {Token ? (
@@ -116,7 +131,7 @@ const Home = () => {
             <button className="primary-btn" onClick={() => navigate("/domain")}>
               Start Interview →
             </button>
-            <button className="secondary-btn">Analyze Resume</button>
+            <button className="secondary-btn">Upcoming</button>
           </div>
         </div>
 
@@ -184,7 +199,7 @@ const Home = () => {
       <section id="resume" className="section">
         <div className="resume-layout">
           <div>
-            <span className="section-tag">Resume</span>
+            <span className="section-tag">Upcoming</span>
             <h2>Your resume,<br />interview-ready</h2>
             <p className="section-desc">
               Build professional resumes with guided templates and run them through

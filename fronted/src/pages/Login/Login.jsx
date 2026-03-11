@@ -1,15 +1,15 @@
-import React, { useContext, useState } from 'react'
-import axios from 'axios'
+import { useContext, useState } from 'react'
 import './Login.css'
 import { userContext } from '../../contexts/userContext'
 import { useNavigate } from 'react-router-dom'
 import {Link} from 'react-router-dom'
-import api from '../../../../backend/utils/api.js'
+import api from '../../utils/api'
+import { toast } from 'react-toastify'
 const Login = () => {
 
   const navigate = useNavigate();
   const [Loading, setLoading] = useState(false)
-  const { url ,setToken } = useContext(userContext)
+  const { setToken } = useContext(userContext)
   const [formData, setformData] = useState({
     email: "",
     password: "",
@@ -20,7 +20,6 @@ const Login = () => {
         ...formData,
         [e.target.name]: e.target.value
       })
-      console.log(url)
     }
 
   const onSubmitHandler = async (e) => {
@@ -31,16 +30,14 @@ const Login = () => {
       if (response.data.success) {
         localStorage.setItem("token", response.data.accessToken);
         setToken(response.data.accessToken);
-        console.log(response.data.message);
+        toast.success(response.data.message);
         navigate("/");
-      }
-      else {
-        console.log(response.data.message)
+
       }
     } catch (error) {
-      console.log(error);
-
-    }finally{
+  console.log(error);
+  toast.error(error.response?.data?.message || "Login failed");
+}finally{
       setLoading(false)
     }
 
@@ -58,6 +55,7 @@ const Login = () => {
           placeholder="Email"
           value={formData.email}
           onChange={onChangeHandler}
+          required
         />
 
         <input
@@ -66,6 +64,7 @@ const Login = () => {
           placeholder="Password"
           value={formData.password}
           onChange={onChangeHandler}
+          required
         />
         <div className="auth-switch">
         <span>First time here?</span>

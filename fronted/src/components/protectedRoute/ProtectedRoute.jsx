@@ -4,8 +4,6 @@ import { userContext } from "../../contexts/userContext";
 
 const ProtectedLayout = () => {
   const { Token,loading } = useContext(userContext);
-  console.log("Token:", Token);
-
   if (loading) return null; // Wait for auth check
 
   if (!Token) {

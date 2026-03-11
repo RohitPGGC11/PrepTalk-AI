@@ -1,9 +1,9 @@
-import React, { useContext, useState } from 'react'
-import axios from 'axios'
+import { useContext, useState } from 'react'
 import './Register.css'
 import { userContext } from '../../contexts/userContext'
 import { Link,useNavigate } from 'react-router-dom'
-import api from '../../../../backend/utils/api'
+import api from '../../utils/api'
+import { toast } from 'react-toastify'
 
 const Register = () => {
 
@@ -14,7 +14,7 @@ const Register = () => {
     password: "",
   })
   const [Loading, setLoading] = useState(false)
-  const { url,setToken } = useContext(userContext)
+  const { setToken } = useContext(userContext)
 
   const onChangeHandler = (e) => {
     setFormData({
@@ -28,15 +28,19 @@ const Register = () => {
 
     try {
       setLoading(true)
-      const response = await api.post(`/api/user-login/register`, formData)
+      const response = await api.post("/api/user-login/register", formData)
       if (response.data.success) {
         localStorage.setItem("token",response.data.accessToken)
         setToken(response.data.accessToken);
+        toast.success(response.data.message || "Registeration Successful");
         navigate("/")
-        // alert("register");
+
+      }else{
+        toast.error(response.data.message);
       }
     } catch (error) {
       console.log(error);
+      toast.error(error.response?.data?.message || "Registration Faild")
     } finally {
       setLoading(false)
     }
@@ -76,7 +80,7 @@ const Register = () => {
 
         <div className="auth-switch">
           <span>Already have an account?</span>
-          <Link to="/">Login here</Link>
+          <Link to="/login">Login here</Link>
         </div>
 
         <button type='submit' disabled={Loading}>

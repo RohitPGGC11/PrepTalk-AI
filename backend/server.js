@@ -1,6 +1,6 @@
 import express from 'express'
 
-import routers from './routes/loginRoute.js';
+import router from './routes/loginRoute.js';
 import AIRouter from './routes/AiRoute.js';
 import Adminrouter from './routes/adminRoutes.js';
 import userRouter from './routes/userRoute.js';
@@ -23,7 +23,7 @@ app.use(cors({
   credentials: true
 }));
 app.use(cookieParser())
-app.use("/api/user-login",routers)
+app.use("/api/user-login",router)
 app.use("/api/ollama",AIRouter);
 app.use("/api/admin", Adminrouter);
 app.use("/api/user",userRouter);

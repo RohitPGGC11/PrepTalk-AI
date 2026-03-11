@@ -23,11 +23,17 @@ api.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
+    const token = localStorage.getItem("token");
+    // If user never logged in → don't try refresh
+    if (!token) {
+      return Promise.reject(error);
+    }
+
     // Prevent infinite loop
     if (
       error.response?.status === 401 &&
       !originalRequest._retry &&
-      originalRequest.url !== "/api/user-login/refresh"
+      originalRequest.url !== "/refresh"
     ) {
       originalRequest._retry = true;
 
@@ -57,3 +63,4 @@ api.interceptors.response.use(
 
 
 export default api;
+
