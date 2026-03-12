@@ -9,8 +9,8 @@ import { isAdmin } from "../middleware/isAdmin.js";
 Adminrouter.use(verifyAccessToken,isAdmin);
 
 Adminrouter.post("/add-question", addQuestion);
-Adminrouter.put("/edit-question/:id",/* auth, isAdmin,*/ editQuestion);
-Adminrouter.delete("/delete-question/:id",/* auth, isAdmin0,*/ deleteQuestion);
+Adminrouter.put("/edit-question/:id", editQuestion);
+Adminrouter.delete("/delete-question/:id", deleteQuestion);
 Adminrouter.get("/fetch-questions",getQuestions);
 Adminrouter.get("/fetch-one/:id",fetchOne);
 
