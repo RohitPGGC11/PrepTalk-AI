@@ -14,7 +14,7 @@ function AddQuestion() {
 
   const [loading, setLoading] = useState(false);
 
-  const domains = ["frontend", "backend","full-stack","dsa","DevOps","ML/AI","mobile","system-design"];
+  const domains = ["frontend", "backend","full-stack","dsa","DevOps","AI/ML","mobile","system-design"];
   const difficulties = ["beginner", "intermediate", "advanced"];
 
   const handleChange = (e) => {

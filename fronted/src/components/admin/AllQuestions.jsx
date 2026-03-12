@@ -18,7 +18,7 @@ const AllQuestions = () => {
       const res = await api.get("/api/admin/fetch-questions", {
         params: { domain, difficultyTier },
       });
-      setQuestions(res.data.data);
+      setQuestions(res.data.data || []);
     } catch (error) {
       console.log(error);
     } finally {
