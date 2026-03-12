@@ -2,7 +2,7 @@ import express from "express";
 const Adminrouter = express.Router();
 
 import {addQuestion,editQuestion,deleteQuestion,getQuestions, fetchOne} from "../controllers/adminController.js";
-import { verifyAccessToken } from "../middleware/authMiddleware.js";
+import { verifyAccessToken } from "../middleware/authmiddleware.js";
 import { isAdmin } from "../middleware/isAdmin.js";
 //pending for protected Route.
 

@@ -3,7 +3,7 @@ import express from "express";
 import {createSession,getSessionById,endSession,getUserSessions} from "../controllers/SessionController.js"
 
 
-import { verifyAccessToken } from "../middleware/authMiddleware.js";
+import { verifyAccessToken } from "../middleware/authmiddleware.js";
 
 const SessionRouter = express.Router();
 
