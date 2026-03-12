@@ -171,7 +171,7 @@ function CurrentPage({ session, sessionAnswers, avgScore, openAnswer, setOpenAns
     <div className="page">
       <h1 className="page-title">
         {session.domain} · {session.difficultyTier}
-        {session.status === "active" && <span className="live-badge">● LIVE</span>}
+        {session.status === "active" && <span className="live-badge">● Incompleted Session</span>}
       </h1>
 
       {/* Stat cards */}

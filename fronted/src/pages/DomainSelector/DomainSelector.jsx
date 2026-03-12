@@ -3,6 +3,7 @@ import "./DomainSelector.css";
 import { useContext } from "react";
 import { userContext } from "../../contexts/userContext";
 import { useNavigate } from "react-router-dom";
+import Navbar from "../../components/Navbar/Navbar";
 
 import api from "../../utils/api";
 const domains = [
@@ -55,6 +56,8 @@ const createSession = async()=>{
   const reset = () => { setSelectedDomain(null); setSelectedTier(null); setConfirmed(false); };
 
   return (
+    <>
+    <Navbar/>
     <div className="ds-page">
       <div className="ds-wrap">
 
@@ -129,5 +132,6 @@ const createSession = async()=>{
 
       </div>
     </div>
+    </>
   );
 }

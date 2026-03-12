@@ -19,7 +19,7 @@ import "react-toastify/dist/ReactToastify.css";
 const App = () => {
   return (
     <div>
-    <ToastContainer />  
+    <ToastContainer  theme="colored" />
     <Routes>
       {/* Home PAGE */}
       <Route path="/" element={<Home/>}></Route>

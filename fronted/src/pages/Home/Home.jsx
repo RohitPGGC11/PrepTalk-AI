@@ -3,8 +3,7 @@ import "./Home.css";
 import { useNavigate } from "react-router-dom";
 import { useContext } from "react";
 import { userContext } from "../../contexts/userContext";
-import api from "../../utils/api";
-import {jwtDecode} from "jwt-decode";
+import Navbar from "../../components/Navbar/Navbar";
 
 /* ── data ── */
 const domains = [
@@ -43,12 +42,12 @@ const stats = [
   ["4.9★", "Average Rating"],
 ];
 
-const resumeFeatures = [
-  "ATS Compatibility Score",
-  "Keyword Density Analysis",
-  "Structure & Formatting",
-  "Action Verb Suggestions",
-  "Role-Specific Tailoring",
+ const interviewFeatures = [
+  "Interview Question Practice",
+  "AI Feedback on Answers",
+  "Confidence & Communication Analysis",
+  "Role-Specific Interview Questions",
+  "Performance Score & Improvement Tips",
 ];
 
 /* ══════════════════════════════════════
@@ -56,55 +55,12 @@ const resumeFeatures = [
 ══════════════════════════════════════ */
 const Home = () => {
   const navigate = useNavigate();
-  const { Token, setToken } = useContext(userContext);
-  let isAdmin =false;
-  if(Token){
-    try {
-      const decoded = jwtDecode(Token);
-      if(decoded.email === "roy3936f@gmail.com"){
-        isAdmin=true;
-      }
-    } catch (error) {
-        console.log("Invalid token")
-    }
-  }
-
-
-
-  const handleLogout = async () => {
-    try {
-      await api.post("/api/user-login/logout");
-      localStorage.removeItem("token");
-      setToken(null);
-      navigate("/");
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
+  const { Token } = useContext(userContext);
   return (
     <div className="home">
 
-      {/* ── NAVBAR ── */}
-      <nav className="navbar">
-        <div className="logo">
-          <span className="logo-highlight">PrepTALK</span> AI
-        </div>
-
-        <ul className="nav-links">
-          <li><a href="#about">About</a></li>
-          <li><a href="#domains">Domains</a></li>
-          <li><a href="#features">Features</a></li>
-          <li><a href="#resume">Upcoming</a></li>
-          {isAdmin && (<li onClick={()=>navigate("/admin")} className="isAdmin">Admin Pannel</li>)}
-        </ul>
-
-        {Token ? (
-          <button className="navbtn" onClick={handleLogout}>Logout</button>
-        ) : (
-          <button className="navbtn" onClick={() => navigate("/login")}>Get Started</button>
-        )}
-      </nav>
+      {/*── NAvbar ── */}
+      <Navbar/>
 
       {/* ── HERO ── */}
       <section className="hero">
@@ -200,20 +156,20 @@ const Home = () => {
         <div className="resume-layout">
           <div>
             <span className="section-tag">Upcoming</span>
-            <h2>Your resume,<br />interview-ready</h2>
+            <h2>Your Will Be,<br />interview-ready</h2>
             <p className="section-desc">
               Build professional resumes with guided templates and run them through
               AI analysis for keyword optimisation, structure improvements, and ATS
               compatibility scoring.
             </p>
             <div className="hero-buttons">
-              <button className="primary-btn">Create Resume</button>
-              <button className="secondary-btn">Analyze Resume</button>
+              <button className="primary-btn">Start your journey</button>
+              <button className="secondary-btn">Analyze YourSelf</button>
             </div>
           </div>
 
           <div className="resume-checklist">
-            {resumeFeatures.map((item) => (
+            {interviewFeatures.map((item) => (
               <div key={item} className="resume-check-item">
                 <span className="checkmark">✓</span> {item}
               </div>

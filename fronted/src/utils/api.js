@@ -38,7 +38,10 @@ api.interceptors.response.use(
       originalRequest._retry = true;
 
       try {
-        const res = await api.post("/api/user-login/refresh");
+        const res = await axios.post("http://localhost:4000/api/user-login/refresh",
+          {},
+          {withCredentials:true}
+        );
 
         const newAccessToken = res.data.accessToken;
 

@@ -19,12 +19,17 @@ export const userContext = createContext();
         if(storedToken){
           setToken(storedToken)
         }else{
+          localStorage.removeItem("token");
           try {
             const response= await api.post("/api/user-login/refresh");
-            localStorage.setItem("token", response.data.accessToken);
-            setToken(response.data.accessToken);
+            if(response.data.accessToken){
+                    localStorage.setItem("token", response.data.accessToken);
+                    setToken(response.data.accessToken);
+            }
+          
           } catch (error) {
               setToken(null)
+              localStorage.removeItem("token")
           }
         }
         setLoading(false); // VERY IMPORTANT
