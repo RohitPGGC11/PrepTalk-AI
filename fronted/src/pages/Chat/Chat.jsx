@@ -60,8 +60,15 @@ function SpeechToText() {
 
         const questionData =response.data.data;
         if (!questionData || !questionData.question) {
+          if(currentOrder === 1){
+            setmessage([{
+              sender:"ai",
+              text:"No questions available for the selected domain right now. Please try a different domain or check back later."
+            }])
+          }else{
               toast.info("Interview completed");
               EndSession();
+          }
               return;
             }
 
