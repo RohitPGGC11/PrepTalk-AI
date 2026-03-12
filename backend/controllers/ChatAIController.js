@@ -1,8 +1,12 @@
-import ollama from "ollama";
+import "dotenv/config";
+import Groq from "groq-sdk";
 import Answer from "../models/AnswerAttemptModel.js";
 import Session from "../models/SessionModel.js";
+
+const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
+
 export const chatController = async (req, res) => {
-  const { question, userAnswer ,questionId,sessionId} = req.body;
+  const { question, userAnswer, questionId, sessionId } = req.body;
 
   if (!question || !userAnswer) {
     return res.status(400).json({
@@ -10,16 +14,12 @@ export const chatController = async (req, res) => {
       error: "question and userAnswer are required"
     });
   }
-      
+
   try {
-    const response = await ollama.chat({
-      model: "llama3:8b",
-      format: "json",
-      options: {
-        temperature: 0.2,     // Stable scoring
-        top_p: 0.9,
-        num_predict: 500
-      },
+    const response = await groq.chat.completions.create({
+      model: "llama-3.3-70b-versatile",
+      temperature: 0.2,
+      max_tokens: 500,
       messages: [
         {
           role: "system",
@@ -59,7 +59,7 @@ Return ONLY valid JSON in this format:
   "exampleUsage": number,
   "communicationStructure": number,
   "grammar": number,
-  "feedback": "Short constructive feedback explaining strengths and improvements"
+  "feedback": " very Short constructive feedback explaining strengths and improvements"
 }
 
 Do not include any extra text outside JSON.
@@ -78,58 +78,62 @@ ${userAnswer}
       ]
     });
 
-    const parsed = JSON.parse(response.message.content);
-    const rspData=parsed;
+    // Extract and parse the response
+    const rawContent = response.choices[0].message.content;
+    const parsed = JSON.parse(rawContent);
+    const rspData = parsed;
 
-    //calculating the overall score
-    const overall =(rspData.accuracy +rspData.depth +rspData.clarity +rspData.problemSolving +
-                    rspData.exampleUsage +rspData.communicationStructure +rspData.grammar) / 7;
+    // Calculating the overall score
+    const overall =
+      (rspData.accuracy + rspData.depth + rspData.clarity + rspData.problemSolving +
+        rspData.exampleUsage + rspData.communicationStructure + rspData.grammar) / 7;
 
+    // Save answer to DB
     try {
       const NewAnswer = new Answer({
-      sessionId:sessionId,
-      questionId:questionId,
-      attemtedquestion:question,
-      userAnswer:userAnswer,
-      accuracy:rspData.accuracy,
-      depth:rspData.depth,
-      clarity:rspData.clarity,
-      problemSolving:rspData.problemSolving,
-      exampleUsage:rspData.exampleUsage,
-      communicationStructure:rspData.communicationStructure,
-      grammar:rspData.grammar,
-      overallScore:overall,
-      feedback:rspData.feedback
-      })
+        sessionId: sessionId,
+        questionId: questionId,
+        attemtedquestion: question,
+        userAnswer: userAnswer,
+        accuracy: rspData.accuracy,
+        depth: rspData.depth,
+        clarity: rspData.clarity,
+        problemSolving: rspData.problemSolving,
+        exampleUsage: rspData.exampleUsage,
+        communicationStructure: rspData.communicationStructure,
+        grammar: rspData.grammar,
+        overallScore: overall,
+        feedback: rspData.feedback
+      });
       await NewAnswer.save();
     } catch (error) {
-      console.log(error);
+      console.log("DB Save Error:", error);
     }
 
-    //updating the total Question AND avgScore in that session
+    // Updating totalQuestions and avgScore in session
     const session = await Session.findById(sessionId);
-              if (!session) {
-          return res.status(404).json({
-            success: false,
-            error: "Session not found"
-          });
-        }
-      const newTotal = session.totalQuestions + 1;
-      const newAvg =
-        ((session.avgScore * session.totalQuestions) + overall) / newTotal;
+    if (!session) {
+      return res.status(404).json({
+        success: false,
+        error: "Session not found"
+      });
+    }
 
-      session.totalQuestions = newTotal;
-      session.avgScore = newAvg;
-      await session.save();
-      
-//returning the AI response feedback to the user
+    const newTotal = session.totalQuestions + 1;
+    const newAvg = ((session.avgScore * session.totalQuestions) + overall) / newTotal;
+
+    session.totalQuestions = newTotal;
+    session.avgScore = newAvg;
+    await session.save();
+
+    // Returning AI feedback to user
     return res.status(200).json({
       success: true,
       data: parsed.feedback
     });
 
   } catch (error) {
-    console.error("Ollama Error:", error);
+    console.error("Groq Error:", error);
     return res.status(500).json({
       success: false,
       error: error.message

@@ -87,7 +87,7 @@ const Home = () => {
             <button className="primary-btn" onClick={() => navigate("/domain")}>
               Start Interview →
             </button>
-            <button className="secondary-btn">Upcoming</button>
+            <button className="secondary-btn" onClick={()=>{window.open("https://www.linkedin.com/in/rohitkumar731", "_blank")}}>Meet the Developer</button>
           </div>
         </div>
 
@@ -158,8 +158,8 @@ const Home = () => {
             <span className="section-tag">Upcoming</span>
             <h2>Your Will Be,<br />interview-ready</h2>
             <p className="section-desc">
-              Build professional resumes with guided templates and run them through
-              AI analysis for keyword optimisation, structure improvements, and ATS
+              Build professional Carrier with guided AI  and run them through
+              AI analysis for keyword optimisation, structure improvements, and response
               compatibility scoring.
             </p>
             <div className="hero-buttons">
@@ -281,9 +281,9 @@ const Home = () => {
         </div>
         <div className="footer-copy">© 2026 PrepTALK AI. All rights reserved.</div>
         <div className="footer-links">
-          <a href="#">Privacy</a>
-          <a href="#">Terms</a>
-          <a href="#">Contact</a>
+          <a href="https://www.linkedin.com/in/rohitkumar731">Privacy</a>
+          <a href="https://www.linkedin.com/in/rohitkumar731">Terms</a>
+          <a href="https://www.linkedin.com/in/rohitkumar731">Contact</a>
         </div>
       </footer>
 

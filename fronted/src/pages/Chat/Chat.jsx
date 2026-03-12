@@ -145,7 +145,10 @@ function SpeechToText() {
         ])
 
         // Move to next question
-        setcurrentOrder((prev) => prev + 1);
+        setTimeout(()=>{
+            setcurrentOrder((prev) => prev + 1);
+        },2000);
+        
         setText("");
       } else {
         console.log("Backend error");

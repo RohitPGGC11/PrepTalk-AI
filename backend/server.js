@@ -1,4 +1,5 @@
 import express from 'express'
+import 'dotenv/config';
 
 import router from './routes/loginRoute.js';
 import AIRouter from './routes/AiRoute.js';
@@ -11,10 +12,9 @@ import cookieParser from "cookie-parser";
 // import mongoose from 'mongoose';
 
 import cors from "cors";
-import 'dotenv/config';
 
 const app =express();
-const PORT=4000;
+const PORT=process.env.PORT;
 
 
 app.use(express.json());
