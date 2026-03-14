@@ -12,7 +12,7 @@ const domains = [
   { id: "full-stack", label: "Full-Stack",    icon: "◈", color: "#8b5cf6", desc: "End-to-end development"       },
   { id: "dsa",       label: "DSA",           icon: "◉", color: "#0ea5e9", desc: "Algorithms & Data Structures" },
   { id: "devOps",    label: "DevOps",        icon: "⬟", color: "#d97706", desc: "CI/CD, Docker, Kubernetes"    },
-  { id: "AI/Ml",        label: "ML / AI",       icon: "◎", color: "#ec4899", desc: "Models, Training, Math"       },
+  { id: "AI/ML",        label: "AI / ML",       icon: "◎", color: "#ec4899", desc: "Models, Training, Math"       },
   { id: "mobile",    label: "Mobile",        icon: "⬠", color: "#10b981", desc: "iOS, Android, React Native"   },
   { id: "system-design",    label: "System Design", icon: "◫", color: "#6366f1", desc: "Architecture & Scalability"   },
 ];
